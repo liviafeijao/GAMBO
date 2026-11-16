@@ -2,7 +2,7 @@ import type {Project,Reference,Repository} from '@/domain/models';
 import objects from '@/assets/project-objects.jpg';
 import botanical from '@/assets/project-botanical.jpg';
 import architecture from '@/assets/project-architecture.jpg';
-export const covers = [objects,botanical,architecture];
+export const covers = [objects,botanical,architecture] as const;
 const projectSeed:Project[] = [
 {id:'p1',name:'Forma — Identidade visual',description:'Uma nova expressão de marca através de formas, contrastes e possibilidades.',client:'Forma Studio',category:'Branding',status:'Em andamento',createdAt:'2026-11-02',deadline:'2026-11-28',cover:objects},
 {id:'p2',name:'Botânica — Campanha',description:'Direção de arte para uma linha de cuidado que conecta natureza e ciência.',client:'Botânica',category:'Direção de arte',status:'Em revisão',createdAt:'2026-11-04',deadline:'2026-11-24',cover:botanical},
