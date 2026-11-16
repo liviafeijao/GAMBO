@@ -1,4 +1,4 @@
-# Pixel Perfect Scene
+# GAMBO
 
 Implement exactly the screenshot and nothing else
 
