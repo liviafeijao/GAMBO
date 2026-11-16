@@ -10,33 +10,128 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AcervoCriativoRouteImport } from './routes/acervo-criativo'
+import { Route as AiDirectorRouteImport } from './routes/ai-director'
+import { Route as AjudaRouteImport } from './routes/ajuda'
+import { Route as AutomacoesRouteImport } from './routes/automacoes'
+import { Route as BmtPromptStudioRouteImport } from './routes/bmt-prompt-studio'
+import { Route as ConfiguracoesRouteImport } from './routes/configuracoes'
+import { Route as ProjetosRouteImport } from './routes/projetos'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AcervoCriativoRoute = AcervoCriativoRouteImport.update({
+  id: '/acervo-criativo',
+  path: '/acervo-criativo',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AiDirectorRoute = AiDirectorRouteImport.update({
+  id: '/ai-director',
+  path: '/ai-director',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AjudaRoute = AjudaRouteImport.update({
+  id: '/ajuda',
+  path: '/ajuda',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AutomacoesRoute = AutomacoesRouteImport.update({
+  id: '/automacoes',
+  path: '/automacoes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BmtPromptStudioRoute = BmtPromptStudioRouteImport.update({
+  id: '/bmt-prompt-studio',
+  path: '/bmt-prompt-studio',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConfiguracoesRoute = ConfiguracoesRouteImport.update({
+  id: '/configuracoes',
+  path: '/configuracoes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProjetosRoute = ProjetosRouteImport.update({
+  id: '/projetos',
+  path: '/projetos',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/acervo-criativo': typeof AcervoCriativoRoute
+  '/ai-director': typeof AiDirectorRoute
+  '/ajuda': typeof AjudaRoute
+  '/automacoes': typeof AutomacoesRoute
+  '/bmt-prompt-studio': typeof BmtPromptStudioRoute
+  '/configuracoes': typeof ConfiguracoesRoute
+  '/projetos': typeof ProjetosRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/acervo-criativo': typeof AcervoCriativoRoute
+  '/ai-director': typeof AiDirectorRoute
+  '/ajuda': typeof AjudaRoute
+  '/automacoes': typeof AutomacoesRoute
+  '/bmt-prompt-studio': typeof BmtPromptStudioRoute
+  '/configuracoes': typeof ConfiguracoesRoute
+  '/projetos': typeof ProjetosRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/acervo-criativo': typeof AcervoCriativoRoute
+  '/ai-director': typeof AiDirectorRoute
+  '/ajuda': typeof AjudaRoute
+  '/automacoes': typeof AutomacoesRoute
+  '/bmt-prompt-studio': typeof BmtPromptStudioRoute
+  '/configuracoes': typeof ConfiguracoesRoute
+  '/projetos': typeof ProjetosRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/acervo-criativo'
+    | '/ai-director'
+    | '/ajuda'
+    | '/automacoes'
+    | '/bmt-prompt-studio'
+    | '/configuracoes'
+    | '/projetos'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/acervo-criativo'
+    | '/ai-director'
+    | '/ajuda'
+    | '/automacoes'
+    | '/bmt-prompt-studio'
+    | '/configuracoes'
+    | '/projetos'
+  id:
+    | '__root__'
+    | '/'
+    | '/acervo-criativo'
+    | '/ai-director'
+    | '/ajuda'
+    | '/automacoes'
+    | '/bmt-prompt-studio'
+    | '/configuracoes'
+    | '/projetos'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AcervoCriativoRoute: typeof AcervoCriativoRoute
+  AiDirectorRoute: typeof AiDirectorRoute
+  AjudaRoute: typeof AjudaRoute
+  AutomacoesRoute: typeof AutomacoesRoute
+  BmtPromptStudioRoute: typeof BmtPromptStudioRoute
+  ConfiguracoesRoute: typeof ConfiguracoesRoute
+  ProjetosRoute: typeof ProjetosRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +143,67 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/acervo-criativo': {
+      id: '/acervo-criativo'
+      path: '/acervo-criativo'
+      fullPath: '/acervo-criativo'
+      preLoaderRoute: typeof AcervoCriativoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ai-director': {
+      id: '/ai-director'
+      path: '/ai-director'
+      fullPath: '/ai-director'
+      preLoaderRoute: typeof AiDirectorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ajuda': {
+      id: '/ajuda'
+      path: '/ajuda'
+      fullPath: '/ajuda'
+      preLoaderRoute: typeof AjudaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/automacoes': {
+      id: '/automacoes'
+      path: '/automacoes'
+      fullPath: '/automacoes'
+      preLoaderRoute: typeof AutomacoesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/bmt-prompt-studio': {
+      id: '/bmt-prompt-studio'
+      path: '/bmt-prompt-studio'
+      fullPath: '/bmt-prompt-studio'
+      preLoaderRoute: typeof BmtPromptStudioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/configuracoes': {
+      id: '/configuracoes'
+      path: '/configuracoes'
+      fullPath: '/configuracoes'
+      preLoaderRoute: typeof ConfiguracoesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/projetos': {
+      id: '/projetos'
+      path: '/projetos'
+      fullPath: '/projetos'
+      preLoaderRoute: typeof ProjetosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AcervoCriativoRoute: AcervoCriativoRoute,
+  AiDirectorRoute: AiDirectorRoute,
+  AjudaRoute: AjudaRoute,
+  AutomacoesRoute: AutomacoesRoute,
+  BmtPromptStudioRoute: BmtPromptStudioRoute,
+  ConfiguracoesRoute: ConfiguracoesRoute,
+  ProjetosRoute: ProjetosRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
