@@ -28,3 +28,8 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+## Application architecture
+- Keep TanStack file routing and shared navigation in the root shell; the platform router is fixed and preserves typed navigation.
+- Separate browser-safe domain entities/validation, local repository contracts, React viewmodels, and module views; this keeps future data integrations independent of the interface.
+- Phase-one data is explicitly demonstrative and persisted only through local repositories; do not add backend integrations for this phase.
