@@ -144,7 +144,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 
   const signOut = useCallback(async () => {
-    const { error } = await getSupabaseClient().auth.signOut();
+    const { error } = await getSupabaseClient().auth.signOut({ scope: "local" });
     if (error) throw error;
     setUser(null);
     setWorkspaceId(null);
