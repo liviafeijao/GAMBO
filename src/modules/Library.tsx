@@ -6,7 +6,7 @@ import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/compone
 import { ConfirmDelete } from "@/components/shared/ProjectDialog";
 import { AssetUploadField } from "@/components/shared/AssetUploadField";
 import { useAssetUrl } from "@/hooks/useAssetUrl";
-import { isStoredAsset, removeAsset } from "@/lib/storage";
+
 import { useCollection } from "@/viewmodels/useCollection";
 import { covers, referencesRepository } from "@/data/repositories";
 import { validateReference, type Reference } from "@/domain/models";
@@ -33,16 +33,8 @@ function ReferenceForm({
   );
   const [error, setError] = useState("");
 
-  async function changeCover(nextCover: string) {
-    const previousCover = value.cover;
+  function changeCover(nextCover: string) {
     setValue((current) => ({ ...current, cover: nextCover }));
-    if (isStoredAsset(previousCover)) {
-      try {
-        await removeAsset(previousCover);
-      } catch (removeError) {
-        console.error("A imagem anterior não pôde ser removida:", removeError);
-      }
-    }
   }
 
   return (
@@ -79,7 +71,7 @@ function ReferenceForm({
               <input value={value.tags.join(",")} onChange={(event) => setValue({ ...value, tags: event.target.value.split(",") })} />
             </label>
             <label className="wide">Imagem demonstrativa
-              <select value={value.cover} onChange={(event) => void changeCover(event.target.value)}>
+              <select value={value.cover} onChange={(event) => changeCover(event.target.value)}>
                 {covers.map((cover, index) => (
                   <option value={cover} key={cover}>{["Formas & objetos", "Botânica", "Arquitetura"][index]}</option>
                 ))}
