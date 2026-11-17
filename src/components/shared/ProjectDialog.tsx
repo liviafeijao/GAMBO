@@ -5,7 +5,7 @@ import { statuses, validateProject, type Project } from "@/domain/models";
 import { covers } from "@/data/repositories";
 import { AssetUploadField } from "@/components/shared/AssetUploadField";
 import { useAssetUrl } from "@/hooks/useAssetUrl";
-import { isStoredAsset, removeAsset } from "@/lib/storage";
+
 
 export function ProjectForm({
   project,
@@ -33,16 +33,8 @@ export function ProjectForm({
   const change = (key: keyof Project, nextValue: string) =>
     setValue((previous) => ({ ...previous, [key]: nextValue }));
 
-  async function changeCover(nextCover: string) {
-    const previousCover = value.cover;
+  function changeCover(nextCover: string) {
     change("cover", nextCover);
-    if (isStoredAsset(previousCover)) {
-      try {
-        await removeAsset(previousCover);
-      } catch (removeError) {
-        console.error("A imagem anterior não pôde ser removida:", removeError);
-      }
-    }
   }
 
   return (
@@ -86,7 +78,7 @@ export function ProjectForm({
               <textarea value={value.description} onChange={(event) => change("description", event.target.value)} rows={3} />
             </label>
             <label className="wide">Capa demonstrativa
-              <select value={value.cover} onChange={(event) => void changeCover(event.target.value)}>
+              <select value={value.cover} onChange={(event) => changeCover(event.target.value)}>
                 {covers.map((cover, index) => <option value={cover} key={cover}>{["Formas & objetos", "Botânica", "Arquitetura"][index]}</option>)}
               </select>
             </label>
