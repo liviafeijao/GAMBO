@@ -26,12 +26,6 @@ type AuthContextValue = {
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
-function getErrorMessage(error: unknown) {
-  return error instanceof Error
-    ? error.message
-    : "Não foi possível concluir a operação. Tente novamente.";
-}
-
 async function prepareUserWorkspace(user: User): Promise<string> {
   const supabase = getSupabaseClient();
   const fullName =
