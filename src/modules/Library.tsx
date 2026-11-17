@@ -194,8 +194,8 @@ export function Library() {
           <Button variant="link" onClick={() => { setQuery(""); setCategory("Todas as categorias"); setCollection("Todas as coleções"); }}>Limpar filtros</Button>
         </div>
       )}
-      {form && <ReferenceForm reference={form === "new" ? undefined : form} onClose={() => setForm(null)} onSave={(item) => { if (save(item)) { setForm(null); toast.success("Referência salva."); } }} />}
-      {deleted && <ConfirmDelete name={deleted.name} onClose={() => setDeleted(null)} onConfirm={() => { if (remove(deleted.id)) { setDeleted(null); toast.success("Referência excluída."); } }} />}
+      {form && <ReferenceForm reference={form === "new" ? undefined : form} onClose={() => setForm(null)} onSave={async (item) => { if (await save(item)) { setForm(null); toast.success("Referência salva no Supabase."); } }} />}
+      {deleted && <ConfirmDelete name={deleted.name} onClose={() => setDeleted(null)} onConfirm={async () => { if (await remove(deleted.id)) { setDeleted(null); toast.success("Referência excluída."); } }} />}
       {detail && <Dialog open onOpenChange={(open) => { if (!open) setDetail(null); }}><DialogContent><ReferenceDetail reference={detail} /></DialogContent></Dialog>}
     </>
   );
