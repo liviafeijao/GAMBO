@@ -5,11 +5,9 @@ import { uploadAsset } from "@/lib/storage";
 
 export function AssetUploadField({
   folder,
-  currentPath,
   onUploaded,
 }: {
   folder: "projects" | "references";
-  currentPath: string;
   onUploaded: (path: string) => void;
 }) {
   const { workspaceId } = useAuth();
