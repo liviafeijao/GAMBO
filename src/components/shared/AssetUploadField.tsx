@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
-import { isStoredAsset, removeAsset, uploadAsset } from "@/lib/storage";
+import { uploadAsset } from "@/lib/storage";
 
 export function AssetUploadField({
   folder,
@@ -26,13 +26,6 @@ export function AssetUploadField({
     try {
       const newPath = await uploadAsset(file, workspaceId, folder);
       onUploaded(newPath);
-      if (isStoredAsset(currentPath)) {
-        try {
-          await removeAsset(currentPath);
-        } catch (error) {
-          console.error("A imagem anterior não pôde ser removida:", error);
-        }
-      }
       toast.success("Imagem enviada para o armazenamento privado.");
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Não foi possível enviar a imagem.");
