@@ -82,7 +82,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .getSession()
       .then(({ data, error }) => {
         if (error) throw error;
-        if (active) setUser(data.session?.user ?? null);
+        if (active) {
+          const sessionUser = data.session?.user ?? null;
+          setUser(sessionUser);
+          if (!sessionUser) setLoading(false);
+        }
       })
       .catch((error: unknown) => {
         console.error("Falha ao recuperar sessão do GAMBO:", error);
