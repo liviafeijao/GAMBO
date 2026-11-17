@@ -72,6 +72,7 @@ function ReferenceForm({
             </label>
             <label className="wide">Imagem demonstrativa
               <select value={value.cover} onChange={(event) => changeCover(event.target.value)}>
+                {!covers.includes(value.cover as (typeof covers)[number]) && <option value={value.cover}>Imagem enviada</option>}
                 {covers.map((cover, index) => (
                   <option value={cover} key={cover}>{["Formas & objetos", "Botânica", "Arquitetura"][index]}</option>
                 ))}
