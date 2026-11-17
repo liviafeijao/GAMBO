@@ -75,7 +75,9 @@ const projectsRepository: Repository<Project> = {
     if (error) throw error;
 
     if (previous?.cover_url && previous.cover_url !== project.cover && isStoredAsset(previous.cover_url)) {
-      await removeAsset(previous.cover_url);
+      try { await removeAsset(previous.cover_url); } catch (cleanupError) {
+        console.error("O registro foi salvo, mas a capa antiga não foi removida:", cleanupError);
+      }
     }
   },
 
@@ -91,7 +93,11 @@ const projectsRepository: Repository<Project> = {
 
     const { error } = await supabase.from("projects").delete().eq("id", id).eq("workspace_id", workspaceId);
     if (error) throw error;
-    if (previous?.cover_url && isStoredAsset(previous.cover_url)) await removeAsset(previous.cover_url);
+    if (previous?.cover_url && isStoredAsset(previous.cover_url)) {
+      try { await removeAsset(previous.cover_url); } catch (cleanupError) {
+        console.error("O projeto foi excluído, mas a capa não foi removida:", cleanupError);
+      }
+    }
   },
 };
 
@@ -124,28 +130,16 @@ const referencesRepository: Repository<Reference> = {
       .maybeSingle();
     if (lookupError) throw lookupError;
 
-    const { data: existingCollection, error: collectionLookupError } = await supabase
+    const { data: collection, error: collectionError } = await supabase
       .from("collections")
+      .upsert(
+        { workspace_id: workspaceId, name: reference.collection.trim(), description: "" },
+        { onConflict: "workspace_id,name" },
+      )
       .select("id")
-      .eq("workspace_id", workspaceId)
-      .eq("name", reference.collection.trim())
-      .maybeSingle();
-    if (collectionLookupError) throw collectionLookupError;
-
-    let collectionId = existingCollection?.id as string | undefined;
-    if (!collectionId) {
-      const { data: createdCollection, error: createCollectionError } = await supabase
-        .from("collections")
-        .insert({
-          workspace_id: workspaceId,
-          name: reference.collection.trim(),
-          description: "",
-        })
-        .select("id")
-        .single();
-      if (createCollectionError) throw createCollectionError;
-      collectionId = createdCollection.id as string;
-    }
+      .single();
+    if (collectionError) throw collectionError;
+    const collectionId = collection.id as string;
 
     const { error } = await supabase.from("creative_references").upsert({
       id: reference.id,
@@ -160,7 +154,9 @@ const referencesRepository: Repository<Reference> = {
     if (error) throw error;
 
     if (previous?.cover_url && previous.cover_url !== reference.cover && isStoredAsset(previous.cover_url)) {
-      await removeAsset(previous.cover_url);
+      try { await removeAsset(previous.cover_url); } catch (cleanupError) {
+        console.error("A referência foi salva, mas a imagem antiga não foi removida:", cleanupError);
+      }
     }
   },
 
@@ -180,7 +176,11 @@ const referencesRepository: Repository<Reference> = {
       .eq("id", id)
       .eq("workspace_id", workspaceId);
     if (error) throw error;
-    if (previous?.cover_url && isStoredAsset(previous.cover_url)) await removeAsset(previous.cover_url);
+    if (previous?.cover_url && isStoredAsset(previous.cover_url)) {
+      try { await removeAsset(previous.cover_url); } catch (cleanupError) {
+        console.error("A referência foi excluída, mas a imagem não foi removida:", cleanupError);
+      }
+    }
   },
 };
 
