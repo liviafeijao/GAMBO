@@ -79,6 +79,7 @@ export function ProjectForm({
             </label>
             <label className="wide">Capa demonstrativa
               <select value={value.cover} onChange={(event) => changeCover(event.target.value)}>
+                {!covers.includes(value.cover as (typeof covers)[number]) && <option value={value.cover}>Imagem enviada</option>}
                 {covers.map((cover, index) => <option value={cover} key={cover}>{["Formas & objetos", "Botânica", "Arquitetura"][index]}</option>)}
               </select>
             </label>
@@ -131,7 +132,7 @@ export function ConfirmDelete({
     <Dialog open onOpenChange={(open) => { if (!open) onClose(); }}>
       <DialogContent>
         <DialogTitle>Excluir “{name}”?</DialogTitle>
-        <DialogDescription>Esta ação não pode ser desfeita. Os dados serão removidos deste navegador.</DialogDescription>
+        <DialogDescription>Esta ação não pode ser desfeita. O registro será removido do GAMBO.</DialogDescription>
         <div className="dialog-actions">
           <Button variant="outline" onClick={onClose}>Cancelar</Button>
           <Button variant="destructive" onClick={onConfirm}>Excluir</Button>
