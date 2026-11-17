@@ -5,6 +5,7 @@ import {
   Settings, HelpCircle, PanelLeftClose, PanelLeftOpen, Search, Bell,
   ChevronRight, ChevronDown, Menu, X, ArrowUpRight, LogOut,
 } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Logo } from "./Logo";
 import { useAuth } from "@/contexts/AuthContext";
@@ -82,7 +83,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             to="/ajuda"
             onClick={() => setMobile(false)}
             className={`nav-link ${location.pathname === "/ajuda" ? "active" : ""}`}
-            title="Ajuda"
+            title="Ajuda & suporte"
           >
             <HelpCircle size={17} />
             <span className="nav-text">Ajuda & suporte</span>
@@ -202,8 +203,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   onClick={async () => {
                     try {
                       await signOut();
-                    } finally {
                       setPopover(null);
+                    } catch (error) {
+                      console.error("Falha ao sair da conta GAMBO:", error);
+                      toast.error(
+                        error instanceof Error
+                          ? error.message
+                          : "Não foi possível sair da conta. Tente novamente.",
+                      );
                     }
                   }}
                 >
