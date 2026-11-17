@@ -84,8 +84,7 @@ export function ProjectForm({
             </label>
             <AssetUploadField
               folder="projects"
-              currentPath={value.cover}
-              onUploaded={(path) => change("cover", path)}
+               onUploaded={(path) => change("cover", path)}
             />
           </div>
           {error && <p role="alert" className="form-error mt-4">{error}</p>}
