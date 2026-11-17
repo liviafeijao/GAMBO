@@ -8,7 +8,7 @@ import {
   type ReactNode,
 } from "react";
 import type { User } from "@supabase/supabase-js";
-import { supabase } from "@/lib/supabase";
+import { getSupabaseClient } from "@/lib/supabase";
 
 type AuthResult = {
   error: string | null;
@@ -37,7 +37,7 @@ async function prepareUserWorkspace(user: User) {
       ? user.user_metadata.full_name
       : user.email?.split("@")[0] ?? "Pessoa usuária";
 
-  const { error: profileError } = await supabase.from("profiles").upsert({
+  const { error: profileError } = await getSupabaseClient().from("profiles").upsert({
     id: user.id,
     full_name: fullName,
   });
@@ -83,7 +83,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = getSupabaseClient().auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
     });
 
@@ -103,7 +103,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signIn = useCallback(
     async (email: string, password: string): Promise<AuthResult> => {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await getSupabaseClient().auth.signInWithPassword({
         email,
         password,
       });
@@ -129,7 +129,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       email: string,
       password: string,
     ): Promise<AuthResult> => {
-      const { data, error } = await supabase.auth.signUp({
+      const { data, error } = await getSupabaseClient().auth.signUp({
         email,
         password,
         options: {
@@ -156,7 +156,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 
   const signOut = useCallback(async () => {
-    const { error } = await supabase.auth.signOut();
+    const { error } = await getSupabaseClient().auth.signOut();
     if (error) throw error;
     setUser(null);
   }, []);
