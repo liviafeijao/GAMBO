@@ -17,6 +17,7 @@ type AuthResult = {
 
 type AuthContextValue = {
   user: User | null;
+  workspaceId: string | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<AuthResult>;
   signUp: (name: string, email: string, password: string) => Promise<AuthResult>;
@@ -31,17 +32,17 @@ function getErrorMessage(error: unknown) {
     : "Não foi possível concluir a operação. Tente novamente.";
 }
 
-async function prepareUserWorkspace(user: User) {
+async function prepareUserWorkspace(user: User): Promise<string> {
+  const supabase = getSupabaseClient();
   const fullName =
     typeof user.user_metadata?.full_name === "string"
       ? user.user_metadata.full_name
       : user.email?.split("@")[0] ?? "Pessoa usuária";
 
-  const { error: profileError } = await getSupabaseClient().from("profiles").upsert({
+  const { error: profileError } = await supabase.from("profiles").upsert({
     id: user.id,
     full_name: fullName,
   });
-
   if (profileError) throw profileError;
 
   const { data: workspace, error: workspaceError } = await supabase
@@ -50,23 +51,32 @@ async function prepareUserWorkspace(user: User) {
     .eq("owner_id", user.id)
     .limit(1)
     .maybeSingle();
-
   if (workspaceError) throw workspaceError;
-  if (workspace) return;
+  if (workspace?.id) return workspace.id as string;
 
-  const { error: createWorkspaceError } = await supabase
+  const { data: createdWorkspace, error: createWorkspaceError } = await supabase
     .from("workspaces")
-    .insert({ owner_id: user.id, name: "Meu estúdio" });
-
+    .insert({ owner_id: user.id, name: "Meu estúdio" })
+    .select("id")
+    .single();
   if (createWorkspaceError) throw createWorkspaceError;
+  return createdWorkspace.id as string;
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [workspaceId, setWorkspaceId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let active = true;
+    const supabase = getSupabaseClient();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
 
     supabase.auth
       .getSession()
@@ -76,16 +86,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       })
       .catch((error: unknown) => {
         console.error("Falha ao recuperar sessão do GAMBO:", error);
-      })
-      .finally(() => {
         if (active) setLoading(false);
       });
-
-    const {
-      data: { subscription },
-    } = getSupabaseClient().auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
 
     return () => {
       active = false;
@@ -94,63 +96,51 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    if (!user) return;
+    let active = true;
+    if (!user) {
+      setWorkspaceId(null);
+      setLoading(false);
+      return;
+    }
 
-    prepareUserWorkspace(user).catch((error: unknown) => {
-      console.error("Não foi possível preparar o workspace:", error);
-    });
+    setLoading(true);
+    prepareUserWorkspace(user)
+      .then((id) => {
+        if (active) setWorkspaceId(id);
+      })
+      .catch((error: unknown) => {
+        console.error("Não foi possível preparar o workspace:", error);
+        if (active) setWorkspaceId(null);
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
   }, [user]);
 
   const signIn = useCallback(
     async (email: string, password: string): Promise<AuthResult> => {
-      const { data, error } = await getSupabaseClient().auth.signInWithPassword({
+      const { error } = await getSupabaseClient().auth.signInWithPassword({
         email,
         password,
       });
-
-      if (error) return { error: error.message };
-
-      if (data.user) {
-        try {
-          await prepareUserWorkspace(data.user);
-        } catch (workspaceError) {
-          return { error: getErrorMessage(workspaceError) };
-        }
-      }
-
-      return { error: null };
+      return { error: error?.message ?? null };
     },
     [],
   );
 
   const signUp = useCallback(
-    async (
-      name: string,
-      email: string,
-      password: string,
-    ): Promise<AuthResult> => {
+    async (name: string, email: string, password: string): Promise<AuthResult> => {
       const { data, error } = await getSupabaseClient().auth.signUp({
         email,
         password,
-        options: {
-          data: { full_name: name },
-        },
+        options: { data: { full_name: name } },
       });
-
       if (error) return { error: error.message };
-
-      if (data.user && data.session) {
-        try {
-          await prepareUserWorkspace(data.user);
-        } catch (workspaceError) {
-          return { error: getErrorMessage(workspaceError) };
-        }
-      }
-
-      return {
-        error: null,
-        needsEmailConfirmation: !data.session,
-      };
+      return { error: null, needsEmailConfirmation: !data.session };
     },
     [],
   );
@@ -159,11 +149,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { error } = await getSupabaseClient().auth.signOut();
     if (error) throw error;
     setUser(null);
+    setWorkspaceId(null);
   }, []);
 
   const value = useMemo(
-    () => ({ user, loading, signIn, signUp, signOut }),
-    [user, loading, signIn, signUp, signOut],
+    () => ({ user, workspaceId, loading, signIn, signUp, signOut }),
+    [user, workspaceId, loading, signIn, signUp, signOut],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
@@ -171,8 +162,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 export function useAuth() {
   const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth precisa ser usado dentro de AuthProvider.");
-  }
+  if (!context) throw new Error("useAuth precisa ser usado dentro de AuthProvider.");
   return context;
 }
