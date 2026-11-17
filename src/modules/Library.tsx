@@ -79,8 +79,7 @@ function ReferenceForm({
             </label>
             <AssetUploadField
               folder="references"
-              currentPath={value.cover}
-              onUploaded={(path) => setValue((current) => ({ ...current, cover: path }))}
+               onUploaded={(path) => setValue((current) => ({ ...current, cover: path }))}
             />
           </div>
           {error && <p role="alert" className="form-error mt-3">{error}</p>}
