@@ -4,10 +4,15 @@ Este documento não contém valores secretos.
 
 ## Supabase
 
-Configure no ambiente local e no provedor de deploy:
+Configure no ambiente local em um arquivo `.env.local` na raiz do projeto:
 
-- `VITE_SUPABASE_URL`: URL pública do projeto.
-- `VITE_SUPABASE_PUBLISHABLE_KEY`: chave publicável do projeto.
+```env
+VITE_SUPABASE_URL=https://SEU-PROJETO.supabase.co
+VITE_SUPABASE_PUBLISHABLE_KEY=SUA_CHAVE_PUBLICAVEL
+VITE_SUPABASE_PASSWORD_RESET_REDIRECT=http://localhost:8080/redefinir-senha
+```
+
+Reinicie o servidor Vite após criar ou alterar o arquivo.
 
 No painel do Supabase/preview:
 

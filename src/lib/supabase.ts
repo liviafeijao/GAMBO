@@ -3,8 +3,15 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 let browserClient: SupabaseClient | undefined;
 
 export function isSupabaseConfigured() {
+  const url = import.meta.env["VITE_SUPABASE_URL"]?.trim();
+  const publishableKey = import.meta.env["VITE_SUPABASE_PUBLISHABLE_KEY"]?.trim();
+
   return Boolean(
-    import.meta.env["VITE_SUPABASE_URL"] && import.meta.env["VITE_SUPABASE_PUBLISHABLE_KEY"],
+    url &&
+    publishableKey &&
+    url !== "https://your-project.supabase.co" &&
+    publishableKey !== "your_supabase_publishable_key" &&
+    /^https?:\/\//.test(url),
   );
 }
 
@@ -19,7 +26,7 @@ export function getSupabaseClient() {
     const supabaseUrl = import.meta.env["VITE_SUPABASE_URL"];
     const supabasePublishableKey = import.meta.env["VITE_SUPABASE_PUBLISHABLE_KEY"];
 
-    if (!supabaseUrl || !supabasePublishableKey) {
+    if (!isSupabaseConfigured()) {
       throw new Error(
         "Configure VITE_SUPABASE_URL e VITE_SUPABASE_PUBLISHABLE_KEY antes de usar o GAMBO.",
       );
