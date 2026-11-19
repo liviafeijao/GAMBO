@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 
 export function AuthScreen() {
-  const { signIn, signUp } = useAuth();
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
+  const { signIn, signUp, resetPassword } = useAuth();
+  const [mode, setMode] = useState<"signin" | "signup" | "reset">("signin");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -22,21 +22,28 @@ export function AuthScreen() {
     setMessage("");
 
     try {
-      const result =
-        mode === "signin"
-          ? await signIn(email.trim(), password)
-          : await signUp(name.trim(), email.trim(), password);
-
-      if (result.error) {
-        setError(result.error);
-      } else if (result.needsEmailConfirmation) {
-        setMessage(
-          "Conta criada! Confira seu e-mail e confirme o cadastro antes de entrar no GAMBO.",
-        );
-        setMode("signin");
-        setPassword("");
+      if (mode === "reset") {
+        const result = await resetPassword(email.trim());
+        if (result.error) setError(result.error);
+        else {
+          setMessage("Enviamos um link de recuperação para seu e-mail.");
+          setMode("signin");
+        }
       } else {
-        setMessage(mode === "signup" ? "Conta criada com sucesso." : "");
+        const result =
+          mode === "signin"
+            ? await signIn(email.trim(), password)
+            : await signUp(name.trim(), email.trim(), password);
+
+        if (result.error) {
+          setError(result.error);
+        } else if (result.needsEmailConfirmation) {
+          setMessage("Conta criada! Confira seu e-mail e confirme o cadastro antes de entrar no GAMBO.");
+          setMode("signin");
+          setPassword("");
+        } else {
+          setMessage(mode === "signup" ? "Conta criada com sucesso." : "");
+        }
       }
     } catch {
       setError("Ocorreu um erro inesperado. Tente novamente.");
@@ -56,12 +63,14 @@ export function AuthScreen() {
             CREATIVE INTELLIGENCE
           </p>
           <h1 className="text-center font-[Space_Grotesk] text-2xl font-semibold">
-            {mode === "signin" ? "Bem-vinda de volta." : "Seu espaço começa aqui."}
+            {mode === "signin" ? "Bem-vinda de volta." : mode === "signup" ? "Seu espaço começa aqui." : "Recuperar senha"}
           </h1>
           <p className="mt-2 text-center text-sm text-white/55">
             {mode === "signin"
               ? "Entre para acessar seu estúdio criativo."
-              : "Crie sua conta e organize seu universo criativo."}
+              : mode === "signup"
+              ? "Crie sua conta e organize seu universo criativo."
+              : "Digite seu e-mail para receber as instruções de recuperação de senha."}
           </p>
 
           <form className="mt-8 space-y-4" onSubmit={handleSubmit}>
@@ -98,30 +107,32 @@ export function AuthScreen() {
               </span>
             </label>
 
-            <label className="block text-xs text-white/70">
-              Senha
-              <span className="mt-2 flex items-center gap-3 rounded-lg border border-white/10 bg-black/20 px-3">
-                <LockKeyhole size={16} className="text-white/40" />
-                <input
-                  required
-                  minLength={6}
-                  type={showPassword ? "text" : "password"}
-                  autoComplete={mode === "signin" ? "current-password" : "new-password"}
-                  value={password}
-                  onChange={(event) => setPassword(event.target.value)}
-                  placeholder="Mínimo de 6 caracteres"
-                  className="h-11 w-full bg-transparent text-sm text-white outline-none placeholder:text-white/30"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((value) => !value)}
-                  className="text-white/40 transition hover:text-white"
-                  aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
-                >
-                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                </button>
-              </span>
-            </label>
+            {mode !== "reset" && (
+              <label className="block text-xs text-white/70">
+                Senha
+                <span className="mt-2 flex items-center gap-3 rounded-lg border border-white/10 bg-black/20 px-3">
+                  <LockKeyhole size={16} className="text-white/40" />
+                  <input
+                    required
+                    minLength={6}
+                    type={showPassword ? "text" : "password"}
+                    autoComplete={mode === "signin" ? "current-password" : "new-password"}
+                    value={password}
+                    onChange={(event) => setPassword(event.target.value)}
+                    placeholder="Mínimo de 6 caracteres"
+                    className="h-11 w-full bg-transparent text-sm text-white outline-none placeholder:text-white/30"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((value) => !value)}
+                    className="text-white/40 transition hover:text-white"
+                    aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+                  >
+                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </span>
+              </label>
+            )}
 
             {error && (
               <p role="alert" className="rounded-lg border border-red-400/20 bg-red-400/10 p-3 text-xs text-red-200">
@@ -139,24 +150,73 @@ export function AuthScreen() {
                 ? "Aguarde..."
                 : mode === "signin"
                   ? "Entrar no GAMBO"
-                  : "Criar minha conta"}
+                  : mode === "signup"
+                  ? "Criar minha conta"
+                  : "Enviar e-mail de recuperação"}
               {!busy && <ArrowRight size={16} />}
             </Button>
           </form>
 
           <div className="mt-6 border-t border-white/10 pt-5 text-center text-xs text-white/55">
-            {mode === "signin" ? "Ainda não tem uma conta?" : "Já tem uma conta?"}{" "}
-            <button
-              type="button"
-              onClick={() => {
-                setMode((current) => current === "signin" ? "signup" : "signin");
-                setError("");
-                setMessage("");
-              }}
-              className="font-semibold text-[#c5d0bb] hover:text-white"
-            >
-              {mode === "signin" ? "Criar conta" : "Fazer login"}
-            </button>
+            {mode === "signin" && (
+              <>
+                Ainda não tem uma conta?{" "}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMode("signup");
+                    setError("");
+                    setMessage("");
+                  }}
+                  className="font-semibold text-[#c5d0bb] hover:text-white"
+                >
+                  Criar conta
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMode("reset");
+                    setError("");
+                    setMessage("");
+                  }}
+                  className="ml-2 font-semibold text-[#c5d0bb] hover:text-white"
+                >
+                  Esqueci minha senha
+                </button>
+              </>
+            )}
+            {mode === "signup" && (
+              <>
+                Já tem uma conta?{" "}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMode("signin");
+                    setError("");
+                    setMessage("");
+                  }}
+                  className="font-semibold text-[#c5d0bb] hover:text-white"
+                >
+                  Fazer login
+                </button>
+              </>
+            )}
+            {mode === "reset" && (
+              <>
+                Lembrou sua senha?{" "}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMode("signin");
+                    setError("");
+                    setMessage("");
+                  }}
+                  className="font-semibold text-[#c5d0bb] hover:text-white"
+                >
+                  Fazer login
+                </button>
+              </>
+            )}
           </div>
         </section>
         <p className="mt-6 text-center font-mono text-[9px] tracking-[0.18em] text-white/25">
