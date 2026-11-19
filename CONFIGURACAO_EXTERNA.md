@@ -56,3 +56,12 @@ Ela cria `pricing_plans` e `project_tasks`, adiciona campos complementares em `p
 Aplique a migration pelo SQL Editor do Supabase após revisão do esquema remoto. Não execute migrations destrutivas; os dados reais existentes não são removidos.
 
 O projeto demonstrativo usa `is_demo = true` e não deve ser associado a uma conta real.
+
+## Variáveis de ambiente suportadas
+
+- `VITE_SUPABASE_URL`: URL pública do projeto (preferencial no Vite/local).
+- `VITE_SUPABASE_PUBLISHABLE_KEY`: chave publicável do projeto (preferencial no Vite/local).
+- `SUPABASE_URL`: fallback compatível com ambientes Lovable/SSR.
+- `SUPABASE_PUBLISHABLE_KEY`: fallback compatível com ambientes Lovable/SSR.
+
+No Lovable, configure `VITE_SUPABASE_URL` e `VITE_SUPABASE_PUBLISHABLE_KEY` no ambiente publicado. Não compartilhe o `.env.local` com o Lovable: a configuração precisa ser feita no painel ou nas configurações de deploy do projeto.
