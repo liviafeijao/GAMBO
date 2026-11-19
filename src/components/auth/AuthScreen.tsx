@@ -3,6 +3,7 @@ import { ArrowRight, Eye, EyeOff, LockKeyhole, Mail, UserRound } from "lucide-re
 import { Logo } from "@/components/shared/Logo";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
+import { isSupabaseConfigured } from "@/lib/supabase";
 
 export function AuthScreen() {
   const { signIn, signUp, resetPassword, updatePassword, isPasswordRecovery } = useAuth();
@@ -14,6 +15,7 @@ export function AuthScreen() {
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const supabaseConfigured = isSupabaseConfigured();
 
   useEffect(() => {
     if (isPasswordRecovery || window.location.pathname === "/redefinir-senha") {
@@ -95,6 +97,16 @@ export function AuthScreen() {
                 ? "Crie sua conta e organize seu universo criativo."
                 : "Digite seu e-mail para receber as instruções de recuperação de senha."}
           </p>
+
+          {!supabaseConfigured && (
+            <p
+              role="status"
+              className="mt-4 rounded-lg border border-amber-400/20 bg-amber-400/10 p-3 text-center text-xs text-amber-100"
+            >
+              Supabase não configurado neste ambiente. Configure as duas variáveis públicas antes de
+              entrar ou recuperar a senha.
+            </p>
+          )}
 
           <form className="mt-8 space-y-4" onSubmit={handleSubmit}>
             {mode === "signup" && (

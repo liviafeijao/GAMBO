@@ -2,6 +2,12 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 let browserClient: SupabaseClient | undefined;
 
+export function isSupabaseConfigured() {
+  return Boolean(
+    import.meta.env["VITE_SUPABASE_URL"] && import.meta.env["VITE_SUPABASE_PUBLISHABLE_KEY"],
+  );
+}
+
 // Create the authenticated client only in the browser. The app uses SSR,
 // so a module-level client could otherwise be shared between server requests.
 export function getSupabaseClient() {
