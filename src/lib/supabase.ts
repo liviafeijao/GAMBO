@@ -2,9 +2,23 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 let browserClient: SupabaseClient | undefined;
 
+function getSupabaseConfig() {
+  const url = (
+    import.meta.env["VITE_SUPABASE_URL"] ||
+    import.meta.env["SUPABASE_URL"] ||
+    ""
+  ).trim();
+  const publishableKey = (
+    import.meta.env["VITE_SUPABASE_PUBLISHABLE_KEY"] ||
+    import.meta.env["SUPABASE_PUBLISHABLE_KEY"] ||
+    ""
+  ).trim();
+
+  return { url, publishableKey };
+}
+
 export function isSupabaseConfigured() {
-  const url = import.meta.env["VITE_SUPABASE_URL"]?.trim();
-  const publishableKey = import.meta.env["VITE_SUPABASE_PUBLISHABLE_KEY"]?.trim();
+  const { url, publishableKey } = getSupabaseConfig();
 
   return Boolean(
     url &&
@@ -23,8 +37,7 @@ export function getSupabaseClient() {
   }
 
   if (!browserClient) {
-    const supabaseUrl = import.meta.env["VITE_SUPABASE_URL"];
-    const supabasePublishableKey = import.meta.env["VITE_SUPABASE_PUBLISHABLE_KEY"];
+    const { url: supabaseUrl, publishableKey: supabasePublishableKey } = getSupabaseConfig();
 
     if (!isSupabaseConfigured()) {
       throw new Error(
