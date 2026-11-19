@@ -85,7 +85,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "GAMBO — Creative Intelligence" },
-      { name: "description", content: "Um espaço completo para planejar, criar e transformar suas ideias em realidade." },
+      {
+        name: "description",
+        content: "Um espaço completo para planejar, criar e transformar suas ideias em realidade.",
+      },
       { name: "author", content: "GAMBO" },
       { property: "og:title", content: "GAMBO — Creative Intelligence" },
       { property: "og:description", content: "Seu estúdio criativo, em um só lugar." },
@@ -98,7 +101,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: appCss,
       },
       { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
-      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap",
+      },
     ],
   }),
   shellComponent: RootShell,
@@ -127,7 +133,11 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <AuthProvider><AppShell><Outlet /></AppShell></AuthProvider>
+      <AuthProvider>
+        <AppShell>
+          <Outlet />
+        </AppShell>
+      </AuthProvider>
       <Toaster theme="dark" position="bottom-right" />
     </QueryClientProvider>
   );

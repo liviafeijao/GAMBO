@@ -17,9 +17,12 @@ export function Projects({ initialQuery = "" }: { initialQuery?: string }) {
   const [detail, setDetail] = useState<Project | null>(null);
   const [deleted, setDeleted] = useState<Project | null>(null);
 
-  const filtered = items.filter((project) =>
-    `${project.name} ${project.client} ${project.category}`.toLowerCase().includes(query.toLowerCase()) &&
-    (status === "Todos os status" || project.status === status),
+  const filtered = items.filter(
+    (project) =>
+      `${project.name} ${project.client} ${project.category}`
+        .toLowerCase()
+        .includes(query.toLowerCase()) &&
+      (status === "Todos os status" || project.status === status),
   );
 
   async function handleSave(project: Project) {
@@ -39,32 +42,104 @@ export function Projects({ initialQuery = "" }: { initialQuery?: string }) {
   return (
     <>
       <div className="page-heading">
-        <div><h1>Projetos<span className="text-primary">.</span></h1><p>Ideias em movimento. Cada projeto, uma nova possibilidade.</p></div>
-        <Button onClick={() => setForm("new")}><Plus />Novo projeto</Button>
+        <div>
+          <h1>
+            Projetos<span className="text-primary">.</span>
+          </h1>
+          <p>Ideias em movimento. Cada projeto, uma nova possibilidade.</p>
+        </div>
+        <Button onClick={() => setForm("new")}>
+          <Plus />
+          Novo projeto
+        </Button>
       </div>
       <div className="filters">
-        <input aria-label="Buscar projetos" placeholder="Buscar projeto, cliente ou categoria…" value={query} onChange={(event) => setQuery(event.target.value)} />
-        <select aria-label="Filtrar status" value={status} onChange={(event) => setStatus(event.target.value)}>
-          {["Todos os status", ...statuses].map((item) => <option key={item}>{item}</option>)}
+        <input
+          aria-label="Buscar projetos"
+          placeholder="Buscar projeto, cliente ou categoria…"
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+        />
+        <select
+          aria-label="Filtrar status"
+          value={status}
+          onChange={(event) => setStatus(event.target.value)}
+        >
+          {["Todos os status", ...statuses].map((item) => (
+            <option key={item}>{item}</option>
+          ))}
         </select>
         <div className="ml-auto flex gap-1">
-          <Button variant={list ? "ghost" : "secondary"} size="icon" title="Visualizar em cards" aria-label="Visualizar em cards" onClick={() => setList(false)}><LayoutGrid /></Button>
-          <Button variant={list ? "secondary" : "ghost"} size="icon" title="Visualizar em lista" aria-label="Visualizar em lista" onClick={() => setList(true)}><List /></Button>
+          <Button
+            variant={list ? "ghost" : "secondary"}
+            size="icon"
+            title="Visualizar em cards"
+            aria-label="Visualizar em cards"
+            onClick={() => setList(false)}
+          >
+            <LayoutGrid />
+          </Button>
+          <Button
+            variant={list ? "secondary" : "ghost"}
+            size="icon"
+            title="Visualizar em lista"
+            aria-label="Visualizar em lista"
+            onClick={() => setList(true)}
+          >
+            <List />
+          </Button>
         </div>
       </div>
-      <div className="section-title"><span className="mono">{filtered.length} PROJETOS · SUPABASE</span></div>
-      {error ? <p role="alert" className="form-error">{error}</p> : loading ? <div className="empty">Carregando projetos…</div> : filtered.length ? (
+      <div className="section-title">
+        <span className="mono">{filtered.length} PROJETOS · SUPABASE</span>
+      </div>
+      {error ? (
+        <p role="alert" className="form-error">
+          {error}
+        </p>
+      ) : loading ? (
+        <div className="empty">Carregando projetos…</div>
+      ) : filtered.length ? (
         <div className={`project-grid ${list ? "projects-list" : ""}`}>
-          {filtered.map((project) => <ProjectCard key={project.id} project={project} onOpen={setDetail} onEdit={setForm} onDelete={setDeleted} />)}
+          {filtered.map((project) => (
+            <ProjectCard
+              key={project.id}
+              project={project}
+              onOpen={setDetail}
+              onEdit={setForm}
+              onDelete={setDeleted}
+            />
+          ))}
         </div>
       ) : (
-        <div className="empty">Nenhum projeto encontrado.
-          <Button variant="link" onClick={() => { setQuery(""); setStatus("Todos os status"); }}>Limpar filtros</Button>
+        <div className="empty">
+          Nenhum projeto encontrado.
+          <Button
+            variant="link"
+            onClick={() => {
+              setQuery("");
+              setStatus("Todos os status");
+            }}
+          >
+            Limpar filtros
+          </Button>
         </div>
       )}
-      {form && <ProjectForm project={form === "new" ? undefined : form} onClose={() => setForm(null)} onSave={handleSave} />}
+      {form && (
+        <ProjectForm
+          project={form === "new" ? undefined : form}
+          onClose={() => setForm(null)}
+          onSave={handleSave}
+        />
+      )}
       {detail && <ProjectDetail project={detail} onClose={() => setDetail(null)} />}
-      {deleted && <ConfirmDelete name={deleted.name} onClose={() => setDeleted(null)} onConfirm={() => void handleRemove(deleted.id)} />}
+      {deleted && (
+        <ConfirmDelete
+          name={deleted.name}
+          onClose={() => setDeleted(null)}
+          onConfirm={() => void handleRemove(deleted.id)}
+        />
+      )}
     </>
   );
 }

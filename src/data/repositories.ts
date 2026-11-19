@@ -74,8 +74,14 @@ const projectsRepository: Repository<Project> = {
     });
     if (error) throw error;
 
-    if (previous?.cover_url && previous.cover_url !== project.cover && isStoredAsset(previous.cover_url)) {
-      try { await removeAsset(previous.cover_url); } catch (cleanupError) {
+    if (
+      previous?.cover_url &&
+      previous.cover_url !== project.cover &&
+      isStoredAsset(previous.cover_url)
+    ) {
+      try {
+        await removeAsset(previous.cover_url);
+      } catch (cleanupError) {
         console.error("O registro foi salvo, mas a capa antiga não foi removida:", cleanupError);
       }
     }
@@ -91,10 +97,16 @@ const projectsRepository: Repository<Project> = {
       .maybeSingle();
     if (lookupError) throw lookupError;
 
-    const { error } = await supabase.from("projects").delete().eq("id", id).eq("workspace_id", workspaceId);
+    const { error } = await supabase
+      .from("projects")
+      .delete()
+      .eq("id", id)
+      .eq("workspace_id", workspaceId);
     if (error) throw error;
     if (previous?.cover_url && isStoredAsset(previous.cover_url)) {
-      try { await removeAsset(previous.cover_url); } catch (cleanupError) {
+      try {
+        await removeAsset(previous.cover_url);
+      } catch (cleanupError) {
         console.error("O projeto foi excluído, mas a capa não foi removida:", cleanupError);
       }
     }
@@ -153,9 +165,18 @@ const referencesRepository: Repository<Reference> = {
     });
     if (error) throw error;
 
-    if (previous?.cover_url && previous.cover_url !== reference.cover && isStoredAsset(previous.cover_url)) {
-      try { await removeAsset(previous.cover_url); } catch (cleanupError) {
-        console.error("A referência foi salva, mas a imagem antiga não foi removida:", cleanupError);
+    if (
+      previous?.cover_url &&
+      previous.cover_url !== reference.cover &&
+      isStoredAsset(previous.cover_url)
+    ) {
+      try {
+        await removeAsset(previous.cover_url);
+      } catch (cleanupError) {
+        console.error(
+          "A referência foi salva, mas a imagem antiga não foi removida:",
+          cleanupError,
+        );
       }
     }
   },
@@ -177,7 +198,9 @@ const referencesRepository: Repository<Reference> = {
       .eq("workspace_id", workspaceId);
     if (error) throw error;
     if (previous?.cover_url && isStoredAsset(previous.cover_url)) {
-      try { await removeAsset(previous.cover_url); } catch (cleanupError) {
+      try {
+        await removeAsset(previous.cover_url);
+      } catch (cleanupError) {
         console.error("A referência foi excluída, mas a imagem não foi removida:", cleanupError);
       }
     }
