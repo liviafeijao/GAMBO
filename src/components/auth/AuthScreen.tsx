@@ -124,22 +124,24 @@ export function AuthScreen() {
             </label>
 
             {error && (
-              <p role="alert" className="rounded-lg border border-red-400/20 bg-red-400/10 p-3 text-xs text-red-200">
+              <p
+                role="alert"
+                className="rounded-lg border border-red-400/20 bg-red-400/10 p-3 text-xs text-red-200"
+              >
                 {error}
               </p>
             )}
             {message && (
-              <p role="status" className="rounded-lg border border-emerald-400/20 bg-emerald-400/10 p-3 text-xs text-emerald-200">
+              <p
+                role="status"
+                className="rounded-lg border border-emerald-400/20 bg-emerald-400/10 p-3 text-xs text-emerald-200"
+              >
                 {message}
               </p>
             )}
 
             <Button type="submit" disabled={busy} className="mt-2 h-11 w-full">
-              {busy
-                ? "Aguarde..."
-                : mode === "signin"
-                  ? "Entrar no GAMBO"
-                  : "Criar minha conta"}
+              {busy ? "Aguarde..." : mode === "signin" ? "Entrar no GAMBO" : "Criar minha conta"}
               {!busy && <ArrowRight size={16} />}
             </Button>
           </form>
@@ -149,7 +151,7 @@ export function AuthScreen() {
             <button
               type="button"
               onClick={() => {
-                setMode((current) => current === "signin" ? "signup" : "signin");
+                setMode((current) => (current === "signin" ? "signup" : "signin"));
                 setError("");
                 setMessage("");
               }}

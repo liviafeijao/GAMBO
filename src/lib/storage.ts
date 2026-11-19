@@ -5,10 +5,16 @@ const MAX_IMAGE_SIZE = 8 * 1024 * 1024;
 const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 
 export function isStoredAsset(path: string) {
-  return Boolean(path) && !path.startsWith("/") && !path.startsWith("http") && !path.startsWith("data:");
+  return (
+    Boolean(path) && !path.startsWith("/") && !path.startsWith("http") && !path.startsWith("data:")
+  );
 }
 
-export async function uploadAsset(file: File, workspaceId: string, folder: "projects" | "references") {
+export async function uploadAsset(
+  file: File,
+  workspaceId: string,
+  folder: "projects" | "references",
+) {
   if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
     throw new Error("Use uma imagem JPG, PNG, WEBP ou GIF.");
   }

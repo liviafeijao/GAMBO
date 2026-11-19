@@ -34,7 +34,8 @@ export function validateProject(project: Project): string | null {
   if (!project.client.trim()) return "Informe o cliente.";
   if (!project.description.trim()) return "Descreva o projeto.";
   if (!project.deadline) return "Selecione o prazo.";
-  if (project.deadline < project.createdAt.slice(0, 10)) return "O prazo não pode ser anterior à criação.";
+  if (project.deadline < project.createdAt.slice(0, 10))
+    return "O prazo não pode ser anterior à criação.";
   if (!statuses.includes(project.status)) return "Selecione um status válido.";
   return null;
 }

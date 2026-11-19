@@ -11,8 +11,7 @@ export function getSupabaseClient() {
 
   if (!browserClient) {
     const supabaseUrl =
-      import.meta.env.VITE_SUPABASE_URL ??
-      "https://fgxdzvlonocddtimkoaw.supabase.co";
+      import.meta.env.VITE_SUPABASE_URL ?? "https://fgxdzvlonocddtimkoaw.supabase.co";
 
     const supabasePublishableKey =
       import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ??

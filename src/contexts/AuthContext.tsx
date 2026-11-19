@@ -31,7 +31,7 @@ async function prepareUserWorkspace(user: User): Promise<string> {
   const fullName =
     typeof user.user_metadata?.full_name === "string"
       ? user.user_metadata.full_name
-      : user.email?.split("@")[0] ?? "Pessoa usuária";
+      : (user.email?.split("@")[0] ?? "Pessoa usuária");
 
   const { error: profileError } = await supabase.from("profiles").upsert({
     id: user.id,
@@ -119,16 +119,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, [user]);
 
-  const signIn = useCallback(
-    async (email: string, password: string): Promise<AuthResult> => {
-      const { error } = await getSupabaseClient().auth.signInWithPassword({
-        email,
-        password,
-      });
-      return { error: error?.message ?? null };
-    },
-    [],
-  );
+  const signIn = useCallback(async (email: string, password: string): Promise<AuthResult> => {
+    const { error } = await getSupabaseClient().auth.signInWithPassword({
+      email,
+      password,
+    });
+    return { error: error?.message ?? null };
+  }, []);
 
   const signUp = useCallback(
     async (name: string, email: string, password: string): Promise<AuthResult> => {
