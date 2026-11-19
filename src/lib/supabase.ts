@@ -1,5 +1,6 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
-import { supabase as lovableSupabase } from "@/integrations/supabase/client";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+
+let browserClient: SupabaseClient | undefined;
 
 export function getSupabaseConfig() {
   const url = (
@@ -36,18 +37,23 @@ export function getSupabaseClient(): SupabaseClient {
     throw new Error("O cliente Supabase só pode ser usado no navegador.");
   }
 
-  if (!isSupabaseConfigured()) {
-    try {
-      return lovableSupabase as unknown as SupabaseClient;
-    } catch (error) {
+  if (!browserClient) {
+    const { url, publishableKey } = getSupabaseConfig();
+
+    if (!isSupabaseConfigured()) {
       throw new Error(
         "Configure VITE_SUPABASE_URL e VITE_SUPABASE_PUBLISHABLE_KEY antes de usar o GAMBO.",
-        { cause: error },
       );
     }
+
+    browserClient = createClient(url, publishableKey, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+      },
+    });
   }
 
-  // Lovable owns the external-Supabase proxy. Returning it prevents two
-  // browser clients and keeps Preview and published builds consistent.
-  return lovableSupabase as unknown as SupabaseClient;
+  return browserClient;
 }
