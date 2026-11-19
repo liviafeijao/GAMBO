@@ -18,8 +18,11 @@ export function AuthScreen() {
   const supabaseConfigured = isSupabaseConfigured();
 
   useEffect(() => {
-    if (isPasswordRecovery || window.location.pathname === "/redefinir-senha") {
+    if (isPasswordRecovery) {
       setMode("update");
+      setPassword("");
+    } else if (window.location.pathname === "/redefinir-senha") {
+      setMode("request");
       setPassword("");
     }
   }, [isPasswordRecovery]);
