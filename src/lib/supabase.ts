@@ -1,16 +1,18 @@
-import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import { supabase as lovableSupabase } from "@/integrations/supabase/client";
 
-let browserClient: SupabaseClient | undefined;
-
-function getSupabaseConfig() {
+export function getSupabaseConfig() {
   const url = (
     import.meta.env["VITE_SUPABASE_URL"] ||
     import.meta.env["SUPABASE_URL"] ||
+    (typeof process !== "undefined" ? process.env["SUPABASE_URL"] : undefined) ||
     ""
   ).trim();
+
   const publishableKey = (
     import.meta.env["VITE_SUPABASE_PUBLISHABLE_KEY"] ||
     import.meta.env["SUPABASE_PUBLISHABLE_KEY"] ||
+    (typeof process !== "undefined" ? process.env["SUPABASE_PUBLISHABLE_KEY"] : undefined) ||
     ""
   ).trim();
 
@@ -29,30 +31,23 @@ export function isSupabaseConfigured() {
   );
 }
 
-// Create the authenticated client only in the browser. The app uses SSR,
-// so a module-level client could otherwise be shared between server requests.
-export function getSupabaseClient() {
+export function getSupabaseClient(): SupabaseClient {
   if (typeof window === "undefined") {
     throw new Error("O cliente Supabase só pode ser usado no navegador.");
   }
 
-  if (!browserClient) {
-    const { url: supabaseUrl, publishableKey: supabasePublishableKey } = getSupabaseConfig();
-
-    if (!isSupabaseConfigured()) {
+  if (!isSupabaseConfigured()) {
+    try {
+      return lovableSupabase as unknown as SupabaseClient;
+    } catch (error) {
       throw new Error(
         "Configure VITE_SUPABASE_URL e VITE_SUPABASE_PUBLISHABLE_KEY antes de usar o GAMBO.",
+        { cause: error },
       );
     }
-
-    browserClient = createClient(supabaseUrl, supabasePublishableKey, {
-      auth: {
-        autoRefreshToken: true,
-        detectSessionInUrl: true,
-        persistSession: true,
-      },
-    });
   }
 
-  return browserClient;
+  // Lovable owns the external-Supabase proxy. Returning it prevents two
+  // browser clients and keeps Preview and published builds consistent.
+  return lovableSupabase as unknown as SupabaseClient;
 }

@@ -64,4 +64,6 @@ O projeto demonstrativo usa `is_demo = true` e não deve ser associado a uma con
 - `SUPABASE_URL`: fallback compatível com ambientes Lovable/SSR.
 - `SUPABASE_PUBLISHABLE_KEY`: fallback compatível com ambientes Lovable/SSR.
 
-No Lovable, configure `VITE_SUPABASE_URL` e `VITE_SUPABASE_PUBLISHABLE_KEY` no ambiente publicado. Não compartilhe o `.env.local` com o Lovable: a configuração precisa ser feita no painel ou nas configurações de deploy do projeto.
+No Lovable, não cadastre `VITE_SUPABASE_URL` ou `VITE_SUPABASE_PUBLISHABLE_KEY` em Secrets. Conecte o projeto externo em **Settings → General → External Supabase** e selecione o projeto `fgxdzvlonocddtimkoaw`. A integração disponibiliza `SUPABASE_URL` e `SUPABASE_PUBLISHABLE_KEY` ao build/SSR do Lovable; o cliente frontend continuará a aceitar `VITE_*` no VS Code.
+
+Para o Preview e a publicação, faça a conexão externa uma vez no Lovable e publique novamente após a conexão. Não adicione a chave Publishable em Secrets nem copie o conteúdo de `.env.local` para o código.
