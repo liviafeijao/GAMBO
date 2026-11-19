@@ -33,8 +33,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     navigation.find((item) => item.to === location.pathname)?.label ??
     (location.pathname === "/ajuda" ? "Ajuda" : "Configurações");
   const displayName =
-    typeof user?.user_metadata?.full_name === "string"
-      ? user.user_metadata.full_name
+    typeof user?.user_metadata?.["full_name"] === "string"
+      ? user.user_metadata["full_name"]
       : user?.email ?? "Conta GAMBO";
   const initials = displayName.slice(0, 2).toUpperCase();
 

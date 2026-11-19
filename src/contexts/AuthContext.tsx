@@ -30,8 +30,8 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 async function prepareUserWorkspace(user: User): Promise<string> {
   const supabase = getSupabaseClient();
   const fullName =
-    typeof user.user_metadata?.full_name === "string"
-      ? user.user_metadata.full_name
+    typeof user.user_metadata?.["full_name"] === "string"
+      ? user.user_metadata["full_name"]
       : user.email?.split("@")[0] ?? "Pessoa usuária";
 
   const { error: profileError } = await supabase.from("profiles").upsert({
