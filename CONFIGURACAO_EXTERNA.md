@@ -11,7 +11,10 @@ Configure no ambiente local e no provedor de deploy:
 
 No painel do Supabase/preview:
 
+- Adicione `http://localhost:8080/redefinir-senha` às Redirect URLs permitidas.
+- Para usar outra porta, defina `VITE_SUPABASE_PASSWORD_RESET_REDIRECT` no `.env` local e adicione a URL exata no Supabase.
 - Confirme as redirect URLs de login e recuperação de senha.
+- A entrega do e-mail depende da configuração de SMTP no projeto: o Supabase não envia para uma caixa real sem template ativo e provedor/Site URL válidos.
 - Confirme o template e a confirmação de e-mail.
 - Confirme as políticas RLS das tabelas `profiles`, `workspaces`, `projects`, `collections` e `creative_references`.
 - Confirme o bucket privado `gambo-assets` e as políticas de Storage.

@@ -22,6 +22,8 @@ type AuthContextValue = {
   signIn: (email: string, password: string) => Promise<AuthResult>;
   signUp: (name: string, email: string, password: string) => Promise<AuthResult>;
   resetPassword: (email: string) => Promise<AuthResult>;
+  updatePassword: (password: string) => Promise<AuthResult>;
+  isPasswordRecovery: boolean;
   signOut: () => Promise<void>;
 };
 
@@ -62,14 +64,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [workspaceId, setWorkspaceId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isPasswordRecovery, setIsPasswordRecovery] = useState(false);
 
   useEffect(() => {
     let active = true;
-    const supabase = getSupabaseClient();
+    let supabase: ReturnType<typeof getSupabaseClient>;
+
+    try {
+      supabase = getSupabaseClient();
+    } catch (error: unknown) {
+      console.error("Supabase não configurado:", error);
+      setLoading(false);
+      return () => {
+        active = false;
+      };
+    }
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      setIsPasswordRecovery(event === "PASSWORD_RECOVERY");
       setUser(session?.user ?? null);
     });
 
@@ -142,9 +156,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 
   const resetPassword = useCallback(async (email: string): Promise<AuthResult> => {
-    const { error } = await getSupabaseClient().auth.resetPasswordForEmail(email.trim(), {
-      redirectTo: `${window.location.origin}/configuracoes`,
+    const normalizedEmail = email.trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+      return { error: "Informe um endereço de e-mail válido." };
+    }
+
+    const configuredRedirect = import.meta.env["VITE_SUPABASE_PASSWORD_RESET_REDIRECT"];
+    const redirectTo = configuredRedirect?.trim() || `${window.location.origin}/redefinir-senha`;
+
+    const { error } = await getSupabaseClient().auth.resetPasswordForEmail(normalizedEmail, {
+      redirectTo,
     });
+    return { error: error?.message ?? null };
+  }, []);
+
+  const updatePassword = useCallback(async (password: string): Promise<AuthResult> => {
+    if (password.length < 6) {
+      return { error: "A nova senha deve ter pelo menos 6 caracteres." };
+    }
+    const { error } = await getSupabaseClient().auth.updateUser({ password });
+    if (!error) setIsPasswordRecovery(false);
     return { error: error?.message ?? null };
   }, []);
 
@@ -156,8 +187,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo(
-    () => ({ user, workspaceId, loading, signIn, signUp, resetPassword, signOut }),
-    [user, workspaceId, loading, signIn, signUp, resetPassword, signOut],
+    () => ({
+      user,
+      workspaceId,
+      loading,
+      signIn,
+      signUp,
+      resetPassword,
+      updatePassword,
+      isPasswordRecovery,
+      signOut,
+    }),
+    [
+      user,
+      workspaceId,
+      loading,
+      signIn,
+      signUp,
+      resetPassword,
+      updatePassword,
+      isPasswordRecovery,
+      signOut,
+    ],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
