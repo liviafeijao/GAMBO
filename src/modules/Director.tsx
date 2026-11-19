@@ -1,6 +1,137 @@
-import {useState} from 'react';
-import {ArrowUp,Bookmark,Plus,Orbit} from 'lucide-react';
-import {Button} from '@/components/ui/button';
-import {covers} from '@/data/repositories';
-import {useDirector,conversations} from '@/viewmodels/useDirector';
-export function Director(){const {messages,busy,ideas,send,openHistory,saveIdea}=useDirector();const [input,setInput]=useState('');return <><div className="page-heading"><div><h1>AI Director<span className="text-primary">.</span></h1><p>Novas perspectivas para a sua próxima ideia.</p></div><span className="demo-label">DEMONSTRAÇÃO LOCAL</span></div><div className="chat-layout"><aside className="chat-history"><h3>Conversas do estúdio</h3><Button variant="outline" className="history-button" onClick={()=>openHistory('Uma nova ideia')}><Plus/>Nova conversa</Button>{conversations.map(c=><Button variant="ghost" className="history-button" key={c} onClick={()=>openHistory(c)}>{c}</Button>)}<h3 className="mt-8">Ideias salvas <span className="text-primary">{ideas.length}</span></h3>{ideas.length?ideas.map((s,i)=><p key={s} className="text-xs muted leading-relaxed">{i+1}. {s.slice(0,110)}…</p>):<p className="muted text-xs leading-relaxed">Nenhuma ideia salva nesta conversa.</p>}</aside><section className="chat-main"><div className="flex items-center gap-2 text-primary"><Orbit size={19}/><span className="text-xs">Direção criativa / Estúdio GAMBO</span></div><div className="messages" aria-live="polite">{messages.map((m,i)=><div className={`message ${m.role}`} key={i}>{m.text}{m.role==='assistant'&&i>0&&<div className="mt-3"><Button variant="ghost" size="sm" onClick={()=>saveIdea(m.text)} disabled={ideas.includes(m.text)}><Bookmark/>{ideas.includes(m.text)?'Ideia salva':'Salvar ideia'}</Button></div>}</div>)}{busy&&<span className="mono">Preparando exemplo de direção…</span>}</div><form className="chat-form" onSubmit={e=>{e.preventDefault();if(input.trim()&&!busy){send(input);setInput('')}}}><textarea aria-label="Ideia ou briefing" value={input} onChange={e=>setInput(e.target.value)} placeholder="Descreva sua ideia ou compartilhe um briefing…"/><Button type="submit" size="icon" aria-label="Enviar briefing" disabled={busy||!input.trim()}><ArrowUp/></Button></form><p className="mono mt-3">RESPOSTAS PRÉ-DEFINIDAS · SEM MODELO DE IA CONECTADO</p><div className="section-title mt-8"><h2>Pontos de partida</h2></div><div className="tool-grid">{['Formas & materialidade','Natureza & produto','Arquitetura & luz'].map((t,i)=><article className="project-card" key={t}><img src={covers[i]} alt={t} loading="lazy" width={1024} height={768} className="w-full h-32 object-cover"/><div className="project-info"><h3>{t}</h3><Button variant="link" size="sm" onClick={()=>send(`Explorar ${t.toLowerCase()}`)}>Explorar direção</Button></div></article>)}</div></section></div></>}
+import { useState } from "react";
+import { ArrowUp, Bookmark, Plus, Orbit } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { covers } from "@/data/repositories";
+import { useDirector, conversations } from "@/viewmodels/useDirector";
+export function Director() {
+  const { messages, busy, ideas, send, openHistory, saveIdea } = useDirector();
+  const [input, setInput] = useState("");
+  return (
+    <>
+      <div className="page-heading">
+        <div>
+          <h1>
+            AI Director<span className="text-primary">.</span>
+          </h1>
+          <p>Novas perspectivas para a sua próxima ideia.</p>
+        </div>
+        <span className="demo-label">DEMONSTRAÇÃO LOCAL</span>
+      </div>
+      <div className="chat-layout">
+        <aside className="chat-history">
+          <h3>Conversas do estúdio</h3>
+          <Button
+            variant="outline"
+            className="history-button"
+            onClick={() => openHistory("Uma nova ideia")}
+          >
+            <Plus />
+            Nova conversa
+          </Button>
+          {conversations.map((c) => (
+            <Button
+              variant="ghost"
+              className="history-button"
+              key={c}
+              onClick={() => openHistory(c)}
+            >
+              {c}
+            </Button>
+          ))}
+          <h3 className="mt-8">
+            Ideias salvas <span className="text-primary">{ideas.length}</span>
+          </h3>
+          {ideas.length ? (
+            ideas.map((s, i) => (
+              <p key={s} className="text-xs muted leading-relaxed">
+                {i + 1}. {s.slice(0, 110)}…
+              </p>
+            ))
+          ) : (
+            <p className="muted text-xs leading-relaxed">Nenhuma ideia salva nesta conversa.</p>
+          )}
+        </aside>
+        <section className="chat-main">
+          <div className="flex items-center gap-2 text-primary">
+            <Orbit size={19} />
+            <span className="text-xs">Direção criativa / Estúdio GAMBO</span>
+          </div>
+          <div className="messages" aria-live="polite">
+            {messages.map((m, i) => (
+              <div className={`message ${m.role}`} key={i}>
+                {m.text}
+                {m.role === "assistant" && i > 0 && (
+                  <div className="mt-3">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => saveIdea(m.text)}
+                      disabled={ideas.includes(m.text)}
+                    >
+                      <Bookmark />
+                      {ideas.includes(m.text) ? "Ideia salva" : "Salvar ideia"}
+                    </Button>
+                  </div>
+                )}
+              </div>
+            ))}
+            {busy && <span className="mono">Preparando exemplo de direção…</span>}
+          </div>
+          <form
+            className="chat-form"
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (input.trim() && !busy) {
+                send(input);
+                setInput("");
+              }
+            }}
+          >
+            <textarea
+              aria-label="Ideia ou briefing"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Descreva sua ideia ou compartilhe um briefing…"
+            />
+            <Button
+              type="submit"
+              size="icon"
+              aria-label="Enviar briefing"
+              disabled={busy || !input.trim()}
+            >
+              <ArrowUp />
+            </Button>
+          </form>
+          <p className="mono mt-3">RESPOSTAS PRÉ-DEFINIDAS · SEM MODELO DE IA CONECTADO</p>
+          <div className="section-title mt-8">
+            <h2>Pontos de partida</h2>
+          </div>
+          <div className="tool-grid">
+            {["Formas & materialidade", "Natureza & produto", "Arquitetura & luz"].map((t, i) => (
+              <article className="project-card" key={t}>
+                <img
+                  src={covers[i]}
+                  alt={t}
+                  loading="lazy"
+                  width={1024}
+                  height={768}
+                  className="w-full h-32 object-cover"
+                />
+                <div className="project-info">
+                  <h3>{t}</h3>
+                  <Button
+                    variant="link"
+                    size="sm"
+                    onClick={() => send(`Explorar ${t.toLowerCase()}`)}
+                  >
+                    Explorar direção
+                  </Button>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      </div>
+    </>
+  );
+}

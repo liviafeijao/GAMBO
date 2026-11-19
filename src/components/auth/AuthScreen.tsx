@@ -38,7 +38,9 @@ export function AuthScreen() {
         if (result.error) {
           setError(result.error);
         } else if (result.needsEmailConfirmation) {
-          setMessage("Conta criada! Confira seu e-mail e confirme o cadastro antes de entrar no GAMBO.");
+          setMessage(
+            "Conta criada! Confira seu e-mail e confirme o cadastro antes de entrar no GAMBO.",
+          );
           setMode("signin");
           setPassword("");
         } else {
@@ -63,14 +65,18 @@ export function AuthScreen() {
             CREATIVE INTELLIGENCE
           </p>
           <h1 className="text-center font-[Space_Grotesk] text-2xl font-semibold">
-            {mode === "signin" ? "Bem-vinda de volta." : mode === "signup" ? "Seu espaço começa aqui." : "Recuperar senha"}
+            {mode === "signin"
+              ? "Bem-vinda de volta."
+              : mode === "signup"
+                ? "Seu espaço começa aqui."
+                : "Recuperar senha"}
           </h1>
           <p className="mt-2 text-center text-sm text-white/55">
             {mode === "signin"
               ? "Entre para acessar seu estúdio criativo."
               : mode === "signup"
-              ? "Crie sua conta e organize seu universo criativo."
-              : "Digite seu e-mail para receber as instruções de recuperação de senha."}
+                ? "Crie sua conta e organize seu universo criativo."
+                : "Digite seu e-mail para receber as instruções de recuperação de senha."}
           </p>
 
           <form className="mt-8 space-y-4" onSubmit={handleSubmit}>
@@ -135,12 +141,18 @@ export function AuthScreen() {
             )}
 
             {error && (
-              <p role="alert" className="rounded-lg border border-red-400/20 bg-red-400/10 p-3 text-xs text-red-200">
+              <p
+                role="alert"
+                className="rounded-lg border border-red-400/20 bg-red-400/10 p-3 text-xs text-red-200"
+              >
                 {error}
               </p>
             )}
             {message && (
-              <p role="status" className="rounded-lg border border-emerald-400/20 bg-emerald-400/10 p-3 text-xs text-emerald-200">
+              <p
+                role="status"
+                className="rounded-lg border border-emerald-400/20 bg-emerald-400/10 p-3 text-xs text-emerald-200"
+              >
                 {message}
               </p>
             )}
@@ -151,8 +163,8 @@ export function AuthScreen() {
                 : mode === "signin"
                   ? "Entrar no GAMBO"
                   : mode === "signup"
-                  ? "Criar minha conta"
-                  : "Enviar e-mail de recuperação"}
+                    ? "Criar minha conta"
+                    : "Enviar e-mail de recuperação"}
               {!busy && <ArrowRight size={16} />}
             </Button>
           </form>

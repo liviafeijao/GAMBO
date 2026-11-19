@@ -29,35 +29,41 @@ export function useCollection<T extends { id: string }>(repository: Repository<T
     void reload();
   }, [reload]);
 
-  const save = useCallback(async (item: T) => {
-    if (!workspaceId) {
-      setError("Não foi possível identificar seu workspace.");
-      return false;
-    }
-    try {
-      await repository.save(item, workspaceId);
-      await reload();
-      return true;
-    } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Não foi possível salvar.");
-      return false;
-    }
-  }, [reload, repository, workspaceId]);
+  const save = useCallback(
+    async (item: T) => {
+      if (!workspaceId) {
+        setError("Não foi possível identificar seu workspace.");
+        return false;
+      }
+      try {
+        await repository.save(item, workspaceId);
+        await reload();
+        return true;
+      } catch (cause) {
+        setError(cause instanceof Error ? cause.message : "Não foi possível salvar.");
+        return false;
+      }
+    },
+    [reload, repository, workspaceId],
+  );
 
-  const remove = useCallback(async (id: string) => {
-    if (!workspaceId) {
-      setError("Não foi possível identificar seu workspace.");
-      return false;
-    }
-    try {
-      await repository.remove(id, workspaceId);
-      await reload();
-      return true;
-    } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Não foi possível excluir.");
-      return false;
-    }
-  }, [reload, repository, workspaceId]);
+  const remove = useCallback(
+    async (id: string) => {
+      if (!workspaceId) {
+        setError("Não foi possível identificar seu workspace.");
+        return false;
+      }
+      try {
+        await repository.remove(id, workspaceId);
+        await reload();
+        return true;
+      } catch (cause) {
+        setError(cause instanceof Error ? cause.message : "Não foi possível excluir.");
+        return false;
+      }
+    },
+    [reload, repository, workspaceId],
+  );
 
   return { items, loading, error, save, remove, reload };
 }

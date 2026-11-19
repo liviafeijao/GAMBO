@@ -1,9 +1,25 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import {
-  LayoutDashboard, Folder, Orbit, SlidersHorizontal, Images, Workflow,
-  Settings, HelpCircle, PanelLeftClose, PanelLeftOpen, Search, Bell,
-  ChevronRight, ChevronDown, Menu, X, ArrowUpRight, LogOut, Send,
+  LayoutDashboard,
+  Folder,
+  Orbit,
+  SlidersHorizontal,
+  Images,
+  Workflow,
+  Settings,
+  HelpCircle,
+  PanelLeftClose,
+  PanelLeftOpen,
+  Search,
+  Bell,
+  ChevronRight,
+  ChevronDown,
+  Menu,
+  X,
+  ArrowUpRight,
+  LogOut,
+  Send,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -35,7 +51,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const displayName =
     typeof user?.user_metadata?.["full_name"] === "string"
       ? user.user_metadata["full_name"]
-      : user?.email ?? "Conta GAMBO";
+      : (user?.email ?? "Conta GAMBO");
   const initials = displayName.slice(0, 2).toUpperCase();
 
   if (loading) {
@@ -237,8 +253,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <main className="main" key={location.pathname}>
         {children}
         <footer className="footer">
-          <span>GAMBO © 2026 <span className="mx-2">/</span> CREATIVE INTELLIGENCE PLATFORM</span>
-          <span className="online">CONTA CONECTADA <span className="ml-2">v.1.0</span></span>
+          <span>
+            GAMBO © 2026 <span className="mx-2">/</span> CREATIVE INTELLIGENCE PLATFORM
+          </span>
+          <span className="online">
+            CONTA CONECTADA <span className="ml-2">v.1.0</span>
+          </span>
         </footer>
       </main>
     </div>
