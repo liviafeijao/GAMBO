@@ -1,4 +1,46 @@
-import {ArrowUpRight,Clock3,Pencil,Trash2} from 'lucide-react';
-import {Button} from '@/components/ui/button';
-import type {Project} from '@/domain/models';
-export function ProjectCard({project,onOpen,onEdit,onDelete}:{project:Project;onOpen:(p:Project)=>void;onEdit?:(p:Project)=>void;onDelete?:(p:Project)=>void}){return <article className="project-card"><Button variant="ghost" className="project-open" onClick={()=>onOpen(project)} aria-label={`Ver ${project.name}`}><div className="project-cover"><img src={project.cover} alt={project.name} width={1024} height={768} loading="lazy"/><span className="status" data-status={project.status}>{project.status}</span></div><div className="project-info"><h3>{project.name}</h3><p>{project.category} <span className="mx-1">·</span> {project.client}</p><div className="project-foot"><div className="mini-avatars"><span className="avatar">LF</span><span className="avatar">RM</span></div><span className="flex items-center gap-1"><Clock3 size={10}/>{new Date(project.deadline+'T12:00:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'short'})}</span><ArrowUpRight size={13}/></div></div></Button>{onEdit&&onDelete&&<div className="card-controls"><Button size="icon" variant="ghost" title="Editar projeto" aria-label={`Editar ${project.name}`} onClick={()=>onEdit(project)}><Pencil/></Button><Button size="icon" variant="ghost" title="Excluir projeto" aria-label={`Excluir ${project.name}`} onClick={()=>onDelete(project)}><Trash2/></Button></div>}</article>}
+import { ArrowUpRight, Clock3, Pencil, Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import type { Project } from "@/domain/models";
+import { useAssetUrl } from "@/hooks/useAssetUrl";
+
+export function ProjectCard({
+  project,
+  onOpen,
+  onEdit,
+  onDelete,
+}: {
+  project: Project;
+  onOpen: (project: Project) => void;
+  onEdit?: (project: Project) => void;
+  onDelete?: (project: Project) => void;
+}) {
+  const coverUrl = useAssetUrl(project.cover);
+  return (
+    <article className="project-card">
+      <Button variant="ghost" className="project-open" onClick={() => onOpen(project)} aria-label={`Ver ${project.name}`}>
+        <div className="project-cover">
+          {coverUrl && <img src={coverUrl} alt={project.name} width={1024} height={768} loading="lazy" />}
+          <span className="status" data-status={project.status}>{project.status}</span>
+        </div>
+        <div className="project-info">
+          <h3>{project.name}</h3>
+          <p>{project.category} <span className="mx-1">·</span> {project.client}</p>
+          <div className="project-foot">
+            <div className="mini-avatars"><span className="avatar">LF</span><span className="avatar">RM</span></div>
+            <span className="flex items-center gap-1">
+              <Clock3 size={10} />
+              {project.deadline ? new Date(project.deadline + "T12:00:00").toLocaleDateString("pt-BR", { day: "2-digit", month: "short" }) : "Sem prazo"}
+            </span>
+            <ArrowUpRight size={13} />
+          </div>
+        </div>
+      </Button>
+      {onEdit && onDelete && (
+        <div className="card-controls">
+          <Button size="icon" variant="ghost" title="Editar projeto" aria-label={`Editar ${project.name}`} onClick={() => onEdit(project)}><Pencil /></Button>
+          <Button size="icon" variant="ghost" title="Excluir projeto" aria-label={`Excluir ${project.name}`} onClick={() => onDelete(project)}><Trash2 /></Button>
+        </div>
+      )}
+    </article>
+  );
+}

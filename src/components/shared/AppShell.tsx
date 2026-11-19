@@ -1,8 +1,246 @@
-import {useState} from 'react';
-import {Link,useLocation,useNavigate} from '@tanstack/react-router';
-import {LayoutDashboard,Folder,Orbit,SlidersHorizontal,Images,Workflow,Settings,HelpCircle,PanelLeftClose,PanelLeftOpen,Search,Bell,ChevronRight,ChevronDown,Menu,X,ArrowUpRight,Send} from 'lucide-react';
-import {Button} from '@/components/ui/button';
-import {Logo} from './Logo';
-import {TELEGRAM_BOT_URL} from '@/lib/external-links';
-const navigation=[{to:'/',label:'Início',icon:LayoutDashboard},{to:'/projetos',label:'Projetos',icon:Folder},{to:'/ai-director',label:'AI Director',icon:Orbit},{to:'/bmt-prompt-studio',label:'BMT Prompt Studio',icon:SlidersHorizontal},{to:'/acervo-criativo',label:'Acervo Criativo',icon:Images},{to:'/automacoes',label:'Automações',icon:Workflow}] as const;
-export function AppShell({children}:{children:React.ReactNode}) {const [collapsed,setCollapsed]=useState(false);const [mobile,setMobile]=useState(false);const [popover,setPopover]=useState<'notifications'|'account'|null>(null);const [query,setQuery]=useState('');const location=useLocation();const navigate=useNavigate();const title=navigation.find(x=>x.to===location.pathname)?.label??(location.pathname==='/ajuda'?'Ajuda':'Configurações');return <div className={`app-shell ${collapsed?'collapsed':''} ${mobile?'mobile-open':''}`}><aside className="sidebar"><Link to="/" onClick={()=>setMobile(false)} aria-label="GAMBO início"><Logo/></Link><div className="mono">CREATIVE INTELLIGENCE</div><div className="nav-label">WORKSPACE</div><nav>{navigation.map(({to,label,icon:Icon})=><Link key={to} to={to} onClick={()=>setMobile(false)} title={label} className={`nav-link ${location.pathname===to?'active':''}`}><Icon size={17}/><span className="nav-text">{label}</span></Link>)}</nav><div className="sidebar-bottom"><Link to="/configuracoes" onClick={()=>setMobile(false)} className={`nav-link ${location.pathname==='/configuracoes'?'active':''}`} title="Configurações"><Settings size={17}/><span className="nav-text">Configurações</span></Link><Link to="/ajuda" onClick={()=>setMobile(false)} className={`nav-link ${location.pathname==='/ajuda'?'active':''}`} title="Ajuda"><HelpCircle size={17}/><span className="nav-text">Ajuda & suporte</span><ArrowUpRight size={13}/></Link><a href={TELEGRAM_BOT_URL} target="_blank" rel="noopener noreferrer" className="nav-link" title="Abrir o bot no Telegram"><Send size={17}/><span className="nav-text">Telegram</span><ArrowUpRight size={13}/></a><Button variant="ghost" className="nav-link w-full" onClick={()=>{if(window.innerWidth<701)setMobile(false);else setCollapsed(!collapsed)}} title={collapsed?'Expandir navegação':'Recolher navegação'}>{collapsed?<PanelLeftOpen size={17}/>:<PanelLeftClose size={17}/>}<span className="nav-text">Recolher menu</span></Button><div className="workspace"><span className="avatar">G.</span><div className="workspace-copy"><div className="text-xs">Gambo Studio</div><div className="muted text-[10px] mt-1">Workspace criativo</div></div><ChevronDown size={13} className="muted workspace-copy ml-auto"/></div></div></aside><header className="topbar"><div className="flex items-center gap-3"><Button className="mobile-toggle" variant="ghost" size="icon" aria-label={mobile?'Fechar menu':'Abrir menu'} onClick={()=>setMobile(!mobile)}>{mobile?<X/>:<Menu/>}</Button><div className="breadcrumb"><span className="muted">Workspace</span><ChevronRight size={12}/><span>{title}</span></div></div><div className="top-actions"><form className="top-search" onSubmit={e=>{e.preventDefault();navigate({to:'/projetos',search:{q:query}})}}><Search size={15}/><input value={query} onChange={e=>setQuery(e.target.value)} aria-label="Buscar no workspace" placeholder="Buscar no workspace..."/><span className="mono">↵</span></form><Button size="icon" variant="ghost" title="Notificações" aria-label="Notificações" onClick={()=>setPopover(popover==='notifications'?null:'notifications')}><Bell size={17}/></Button><div className="divider"/><Button variant="ghost" onClick={()=>setPopover(popover==='account'?null:'account')} className="gap-2 px-0" aria-label="Menu da conta"><span className="avatar">LF</span><span className="text-xs profile-name">Lívia Feijão</span><ChevronDown size={12}/></Button></div>{popover&&<div className="popover-panel"><div className="flex items-center justify-between"><h3>{popover==='notifications'?'Notificações':'Sua conta'}</h3><Button size="icon" variant="ghost" aria-label="Fechar painel" onClick={()=>setPopover(null)}><X/></Button></div>{popover==='notifications'?<><p className="text-xs leading-relaxed">Botânica — Campanha está em revisão.</p><p className="muted text-[10px] mt-2">Atividade demonstrativa · há 2 horas</p><Link to="/projetos" search={{q:''}} onClick={()=>setPopover(null)}>Ver projetos <ChevronRight className="inline" size={12}/></Link></>:<><span className="demo-label">PERFIL DEMONSTRATIVO</span><Link to="/configuracoes" onClick={()=>setPopover(null)}>Configurações da conta</Link><Link to="/ajuda" onClick={()=>setPopover(null)}>Ajuda & suporte</Link></>}</div>}</header><main className="main" key={location.pathname}>{children}<footer className="footer"><span>GAMBO © 2026 <span className="mx-2">/</span> CREATIVE INTELLIGENCE PLATFORM</span><a className="footer-link" href={TELEGRAM_BOT_URL} target="_blank" rel="noopener noreferrer">TELEGRAM <Send size={11}/></a><span className="online">AMBIENTE DEMONSTRATIVO <span className="ml-2">v.1.0</span></span></footer></main></div>}
+import { useState } from "react";
+import { Link, useLocation, useNavigate } from "@tanstack/react-router";
+import {
+  LayoutDashboard, Folder, Orbit, SlidersHorizontal, Images, Workflow,
+  Settings, HelpCircle, PanelLeftClose, PanelLeftOpen, Search, Bell,
+  ChevronRight, ChevronDown, Menu, X, ArrowUpRight, LogOut, Send,
+} from "lucide-react";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Logo } from "./Logo";
+import { TELEGRAM_BOT_URL } from "@/lib/external-links";
+import { useAuth } from "@/contexts/AuthContext";
+import { AuthScreen } from "@/components/auth/AuthScreen";
+
+const navigation = [
+  { to: "/", label: "Início", icon: LayoutDashboard },
+  { to: "/projetos", label: "Projetos", icon: Folder },
+  { to: "/ai-director", label: "AI Director", icon: Orbit },
+  { to: "/bmt-prompt-studio", label: "BMT Prompt Studio", icon: SlidersHorizontal },
+  { to: "/acervo-criativo", label: "Acervo Criativo", icon: Images },
+  { to: "/automacoes", label: "Automações", icon: Workflow },
+] as const;
+
+export function AppShell({ children }: { children: React.ReactNode }) {
+  const { user, loading, signOut } = useAuth();
+  const [collapsed, setCollapsed] = useState(false);
+  const [mobile, setMobile] = useState(false);
+  const [popover, setPopover] = useState<"notifications" | "account" | null>(null);
+  const [query, setQuery] = useState("");
+  const location = useLocation();
+  const navigate = useNavigate();
+  const title =
+    navigation.find((item) => item.to === location.pathname)?.label ??
+    (location.pathname === "/ajuda" ? "Ajuda" : "Configurações");
+  const displayName =
+    typeof user?.user_metadata?.full_name === "string"
+      ? user.user_metadata.full_name
+      : user?.email ?? "Conta GAMBO";
+  const initials = displayName.slice(0, 2).toUpperCase();
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#101210] text-sm text-white/60">
+        Preparando seu espaço GAMBO...
+      </div>
+    );
+  }
+
+  if (!user) return <AuthScreen />;
+
+  return (
+    <div className={`app-shell ${collapsed ? "collapsed" : ""} ${mobile ? "mobile-open" : ""}`}>
+      <aside className="sidebar">
+        <Link to="/" onClick={() => setMobile(false)} aria-label="GAMBO início">
+          <Logo />
+        </Link>
+        <div className="mono">CREATIVE INTELLIGENCE</div>
+        <div className="nav-label">WORKSPACE</div>
+        <nav>
+          {navigation.map(({ to, label, icon: Icon }) => (
+            <Link
+              key={to}
+              to={to}
+              onClick={() => setMobile(false)}
+              title={label}
+              className={`nav-link ${location.pathname === to ? "active" : ""}`}
+            >
+              <Icon size={17} />
+              <span className="nav-text">{label}</span>
+            </Link>
+          ))}
+        </nav>
+        <div className="sidebar-bottom">
+          <Link
+            to="/configuracoes"
+            onClick={() => setMobile(false)}
+            className={`nav-link ${location.pathname === "/configuracoes" ? "active" : ""}`}
+            title="Configurações"
+          >
+            <Settings size={17} />
+            <span className="nav-text">Configurações</span>
+          </Link>
+          <Link
+            to="/ajuda"
+            onClick={() => setMobile(false)}
+            className={`nav-link ${location.pathname === "/ajuda" ? "active" : ""}`}
+            title="Ajuda"
+          >
+            <HelpCircle size={17} />
+            <span className="nav-text">Ajuda & suporte</span>
+            <ArrowUpRight size={13} />
+          </Link>
+          <a
+            href={TELEGRAM_BOT_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="nav-link"
+            title="Abrir o bot no Telegram"
+          >
+            <Send size={17} />
+            <span className="nav-text">Telegram</span>
+            <ArrowUpRight size={13} />
+          </a>
+          <Button
+            variant="ghost"
+            className="nav-link w-full"
+            onClick={() => {
+              if (window.innerWidth < 701) setMobile(false);
+              else setCollapsed(!collapsed);
+            }}
+            title={collapsed ? "Expandir navegação" : "Recolher navegação"}
+          >
+            {collapsed ? <PanelLeftOpen size={17} /> : <PanelLeftClose size={17} />}
+            <span className="nav-text">Recolher menu</span>
+          </Button>
+          <div className="workspace">
+            <span className="avatar">{initials}</span>
+            <div className="workspace-copy">
+              <div className="text-xs">Meu estúdio</div>
+              <div className="muted mt-1 text-[10px]">Workspace conectado</div>
+            </div>
+            <ChevronDown size={13} className="muted workspace-copy ml-auto" />
+          </div>
+        </div>
+      </aside>
+
+      <header className="topbar">
+        <div className="flex items-center gap-3">
+          <Button
+            className="mobile-toggle"
+            variant="ghost"
+            size="icon"
+            aria-label={mobile ? "Fechar menu" : "Abrir menu"}
+            onClick={() => setMobile(!mobile)}
+          >
+            {mobile ? <X /> : <Menu />}
+          </Button>
+          <div className="breadcrumb">
+            <span className="muted">Workspace</span>
+            <ChevronRight size={12} />
+            <span>{title}</span>
+          </div>
+        </div>
+        <div className="top-actions">
+          <form
+            className="top-search"
+            onSubmit={(event) => {
+              event.preventDefault();
+              navigate({ to: "/projetos", search: { q: query } });
+            }}
+          >
+            <Search size={15} />
+            <input
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              aria-label="Buscar no workspace"
+              placeholder="Buscar no workspace..."
+            />
+            <span className="mono">↵</span>
+          </form>
+          <Button
+            size="icon"
+            variant="ghost"
+            title="Notificações"
+            aria-label="Notificações"
+            onClick={() => setPopover(popover === "notifications" ? null : "notifications")}
+          >
+            <Bell size={17} />
+          </Button>
+          <div className="divider" />
+          <Button
+            variant="ghost"
+            onClick={() => setPopover(popover === "account" ? null : "account")}
+            className="gap-2 px-0"
+            aria-label="Menu da conta"
+          >
+            <span className="avatar">{initials}</span>
+            <span className="profile-name max-w-36 truncate text-xs">{displayName}</span>
+            <ChevronDown size={12} />
+          </Button>
+        </div>
+
+        {popover && (
+          <div className="popover-panel">
+            <div className="flex items-center justify-between">
+              <h3>{popover === "notifications" ? "Notificações" : "Sua conta"}</h3>
+              <Button
+                size="icon"
+                variant="ghost"
+                aria-label="Fechar painel"
+                onClick={() => setPopover(null)}
+              >
+                <X />
+              </Button>
+            </div>
+            {popover === "notifications" ? (
+              <>
+                <p className="text-xs leading-relaxed">
+                  Suas notificações e atividades aparecerão aqui.
+                </p>
+                <p className="muted mt-2 text-[10px]">Central de notificações GAMBO</p>
+              </>
+            ) : (
+              <>
+                <span className="demo-label block truncate">{user.email}</span>
+                <Link to="/configuracoes" onClick={() => setPopover(null)}>
+                  Configurações da conta
+                </Link>
+                <Link to="/ajuda" onClick={() => setPopover(null)}>
+                  Ajuda & suporte
+                </Link>
+                <Button
+                  variant="ghost"
+                  className="mt-2 w-full justify-start gap-2"
+                  onClick={async () => {
+                    try {
+                      await signOut();
+                      setPopover(null);
+                    } catch (error) {
+                      console.error("Falha ao sair da conta GAMBO:", error);
+                      toast.error(
+                        error instanceof Error
+                          ? error.message
+                          : "Não foi possível sair da conta. Tente novamente.",
+                      );
+                    }
+                  }}
+                >
+                  <LogOut size={15} /> Sair da conta
+                </Button>
+              </>
+            )}
+          </div>
+        )}
+      </header>
+
+      <main className="main" key={location.pathname}>
+        {children}
+        <footer className="footer">
+          <span>GAMBO © 2026 <span className="mx-2">/</span> CREATIVE INTELLIGENCE PLATFORM</span>
+          <span className="online">CONTA CONECTADA <span className="ml-2">v.1.0</span></span>
+        </footer>
+      </main>
+    </div>
+  );
+}
