@@ -17,6 +17,10 @@ type ProjectRow = {
   created_on: string;
   deadline: string | null;
   cover_url: string | null;
+  is_demo?: boolean;
+  priority?: string;
+  start_date?: string;
+  briefing?: Record<string, unknown> | null;
 };
 
 type ReferenceRow = {
@@ -26,14 +30,16 @@ type ReferenceRow = {
   category: string;
   tags: string[];
   cover_url: string | null;
-  collections: { name: string } | null;
+  collections: { name: string }[] | null;
 };
 
 const projectsRepository: Repository<Project> = {
   async list(workspaceId) {
     const { data, error } = await getSupabaseClient()
       .from("projects")
-      .select("id,name,description,client,category,status,created_on,deadline,cover_url")
+      .select(
+        "id,name,description,client,category,status,created_on,deadline,cover_url,is_demo,priority,start_date,briefing",
+      )
       .eq("workspace_id", workspaceId)
       .order("created_at", { ascending: false });
     if (error) throw error;
@@ -47,6 +53,14 @@ const projectsRepository: Repository<Project> = {
       createdAt: row.created_on,
       deadline: row.deadline ?? "",
       cover: row.cover_url || covers[0],
+      isDemo: row.is_demo === true,
+      ...(row.priority ? { priority: row.priority } : {}),
+      ...(row.start_date
+        ? { startDate: row.start_date }
+        : row.created_on
+          ? { startDate: row.created_on }
+          : {}),
+      ...(row.briefing ? { briefing: row.briefing } : {}),
     }));
   },
 
@@ -71,6 +85,10 @@ const projectsRepository: Repository<Project> = {
       created_on: project.createdAt,
       deadline: project.deadline || null,
       cover_url: project.cover,
+      is_demo: project.isDemo ?? false,
+      priority: project.priority ?? null,
+      start_date: project.startDate || null,
+      briefing: project.briefing ?? null,
     });
     if (error) throw error;
 
@@ -126,7 +144,7 @@ const referencesRepository: Repository<Reference> = {
       name: row.name,
       description: row.description ?? "",
       category: row.category ?? "",
-      collection: row.collections?.name ?? "Geral",
+      collection: row.collections?.[0]?.name ?? "Geral",
       tags: row.tags ?? [],
       cover: row.cover_url || covers[0],
     }));

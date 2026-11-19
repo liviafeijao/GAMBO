@@ -27,6 +27,9 @@ export function ProjectCard({
           {coverUrl && (
             <img src={coverUrl} alt={project.name} width={1024} height={768} loading="lazy" />
           )}
+          {project.isDemo && (
+            <span className="demo-label absolute left-3 top-3">PROJETO DEMONSTRATIVO</span>
+          )}
           <span className="status" data-status={project.status}>
             {project.status}
           </span>

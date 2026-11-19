@@ -16,6 +16,7 @@ import { Route as AjudaRouteImport } from './routes/ajuda'
 import { Route as AutomacoesRouteImport } from './routes/automacoes'
 import { Route as BmtPromptStudioRouteImport } from './routes/bmt-prompt-studio'
 import { Route as ConfiguracoesRouteImport } from './routes/configuracoes'
+import { Route as PlanosRouteImport } from './routes/planos'
 import { Route as ProjetosRouteImport } from './routes/projetos'
 import { Route as RedefinirSenhaRouteImport } from './routes/redefinir-senha'
 
@@ -54,6 +55,11 @@ const ConfiguracoesRoute = ConfiguracoesRouteImport.update({
   path: '/configuracoes',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PlanosRoute = PlanosRouteImport.update({
+  id: '/planos',
+  path: '/planos',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProjetosRoute = ProjetosRouteImport.update({
   id: '/projetos',
   path: '/projetos',
@@ -73,6 +79,7 @@ export interface FileRoutesByFullPath {
   '/automacoes': typeof AutomacoesRoute
   '/bmt-prompt-studio': typeof BmtPromptStudioRoute
   '/configuracoes': typeof ConfiguracoesRoute
+  '/planos': typeof PlanosRoute
   '/projetos': typeof ProjetosRoute
   '/redefinir-senha': typeof RedefinirSenhaRoute
 }
@@ -84,6 +91,7 @@ export interface FileRoutesByTo {
   '/automacoes': typeof AutomacoesRoute
   '/bmt-prompt-studio': typeof BmtPromptStudioRoute
   '/configuracoes': typeof ConfiguracoesRoute
+  '/planos': typeof PlanosRoute
   '/projetos': typeof ProjetosRoute
   '/redefinir-senha': typeof RedefinirSenhaRoute
 }
@@ -96,6 +104,7 @@ export interface FileRoutesById {
   '/automacoes': typeof AutomacoesRoute
   '/bmt-prompt-studio': typeof BmtPromptStudioRoute
   '/configuracoes': typeof ConfiguracoesRoute
+  '/planos': typeof PlanosRoute
   '/projetos': typeof ProjetosRoute
   '/redefinir-senha': typeof RedefinirSenhaRoute
 }
@@ -109,6 +118,7 @@ export interface FileRouteTypes {
     | '/automacoes'
     | '/bmt-prompt-studio'
     | '/configuracoes'
+    | '/planos'
     | '/projetos'
     | '/redefinir-senha'
   fileRoutesByTo: FileRoutesByTo
@@ -120,6 +130,7 @@ export interface FileRouteTypes {
     | '/automacoes'
     | '/bmt-prompt-studio'
     | '/configuracoes'
+    | '/planos'
     | '/projetos'
     | '/redefinir-senha'
   id:
@@ -131,6 +142,7 @@ export interface FileRouteTypes {
     | '/automacoes'
     | '/bmt-prompt-studio'
     | '/configuracoes'
+    | '/planos'
     | '/projetos'
     | '/redefinir-senha'
   fileRoutesById: FileRoutesById
@@ -143,6 +155,7 @@ export interface RootRouteChildren {
   AutomacoesRoute: typeof AutomacoesRoute
   BmtPromptStudioRoute: typeof BmtPromptStudioRoute
   ConfiguracoesRoute: typeof ConfiguracoesRoute
+  PlanosRoute: typeof PlanosRoute
   ProjetosRoute: typeof ProjetosRoute
   RedefinirSenhaRoute: typeof RedefinirSenhaRoute
 }
@@ -198,6 +211,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConfiguracoesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/planos': {
+      id: '/planos'
+      path: '/planos'
+      fullPath: '/planos'
+      preLoaderRoute: typeof PlanosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/projetos': {
       id: '/projetos'
       path: '/projetos'
@@ -223,6 +243,7 @@ const rootRouteChildren: RootRouteChildren = {
   AutomacoesRoute: AutomacoesRoute,
   BmtPromptStudioRoute: BmtPromptStudioRoute,
   ConfiguracoesRoute: ConfiguracoesRoute,
+  PlanosRoute: PlanosRoute,
   ProjetosRoute: ProjetosRoute,
   RedefinirSenhaRoute: RedefinirSenhaRoute,
 }

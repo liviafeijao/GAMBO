@@ -20,6 +20,7 @@ import {
   ArrowUpRight,
   LogOut,
   Send,
+  CreditCard,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -34,6 +35,7 @@ const navigation = [
   { to: "/ai-director", label: "AI Director", icon: Orbit },
   { to: "/bmt-prompt-studio", label: "BMT Prompt Studio", icon: SlidersHorizontal },
   { to: "/acervo-criativo", label: "Acervo Criativo", icon: Images },
+  { to: "/planos", label: "Planos", icon: CreditCard },
   { to: "/automacoes", label: "Automações", icon: Workflow },
 ] as const;
 

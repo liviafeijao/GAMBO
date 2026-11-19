@@ -41,3 +41,13 @@ Configure no ambiente de deploy as duas variáveis públicas de Supabase. Os arq
 - BMT Prompt Studio: aguardar o código original e os dados do criador.
 - Planos e preços: cadastrar valores comerciais definidos pela empresa antes de ativar pagamentos.
 - Notificações/Telegram: a interface já preserva o link público; atendimento, webhooks e credenciais ainda não estão conectados.
+
+## Preços e demonstração acadêmica
+
+A migration complementar está em `supabase/migrations/202611190001_gambo_pricing_and_demo.sql`.
+
+Ela cria `pricing_plans` e `project_tasks`, adiciona campos complementares em `projects` e insere três planos ilustrativos e oito tarefas Aurora idempotentes.
+
+Aplique a migration pelo SQL Editor do Supabase após revisão do esquema remoto. Não execute migrations destrutivas; os dados reais existentes não são removidos.
+
+O projeto demonstrativo usa `is_demo = true` e não deve ser associado a uma conta real.
