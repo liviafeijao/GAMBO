@@ -16,6 +16,7 @@ import { Route as AjudaRouteImport } from './routes/ajuda'
 import { Route as AutomacoesRouteImport } from './routes/automacoes'
 import { Route as BmtPromptStudioRouteImport } from './routes/bmt-prompt-studio'
 import { Route as ConfiguracoesRouteImport } from './routes/configuracoes'
+import { Route as PrecosRouteImport } from './routes/precos'
 import { Route as ProjetosRouteImport } from './routes/projetos'
 
 const IndexRoute = IndexRouteImport.update({
@@ -53,6 +54,11 @@ const ConfiguracoesRoute = ConfiguracoesRouteImport.update({
   path: '/configuracoes',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PrecosRoute = PrecosRouteImport.update({
+  id: '/precos',
+  path: '/precos',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProjetosRoute = ProjetosRouteImport.update({
   id: '/projetos',
   path: '/projetos',
@@ -67,6 +73,7 @@ export interface FileRoutesByFullPath {
   '/automacoes': typeof AutomacoesRoute
   '/bmt-prompt-studio': typeof BmtPromptStudioRoute
   '/configuracoes': typeof ConfiguracoesRoute
+  '/precos': typeof PrecosRoute
   '/projetos': typeof ProjetosRoute
 }
 export interface FileRoutesByTo {
@@ -77,6 +84,7 @@ export interface FileRoutesByTo {
   '/automacoes': typeof AutomacoesRoute
   '/bmt-prompt-studio': typeof BmtPromptStudioRoute
   '/configuracoes': typeof ConfiguracoesRoute
+  '/precos': typeof PrecosRoute
   '/projetos': typeof ProjetosRoute
 }
 export interface FileRoutesById {
@@ -88,6 +96,7 @@ export interface FileRoutesById {
   '/automacoes': typeof AutomacoesRoute
   '/bmt-prompt-studio': typeof BmtPromptStudioRoute
   '/configuracoes': typeof ConfiguracoesRoute
+  '/precos': typeof PrecosRoute
   '/projetos': typeof ProjetosRoute
 }
 export interface FileRouteTypes {
@@ -100,6 +109,7 @@ export interface FileRouteTypes {
     | '/automacoes'
     | '/bmt-prompt-studio'
     | '/configuracoes'
+    | '/precos'
     | '/projetos'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -110,6 +120,7 @@ export interface FileRouteTypes {
     | '/automacoes'
     | '/bmt-prompt-studio'
     | '/configuracoes'
+    | '/precos'
     | '/projetos'
   id:
     | '__root__'
@@ -120,6 +131,7 @@ export interface FileRouteTypes {
     | '/automacoes'
     | '/bmt-prompt-studio'
     | '/configuracoes'
+    | '/precos'
     | '/projetos'
   fileRoutesById: FileRoutesById
 }
@@ -131,6 +143,7 @@ export interface RootRouteChildren {
   AutomacoesRoute: typeof AutomacoesRoute
   BmtPromptStudioRoute: typeof BmtPromptStudioRoute
   ConfiguracoesRoute: typeof ConfiguracoesRoute
+  PrecosRoute: typeof PrecosRoute
   ProjetosRoute: typeof ProjetosRoute
 }
 
@@ -185,6 +198,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConfiguracoesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/precos': {
+      id: '/precos'
+      path: '/precos'
+      fullPath: '/precos'
+      preLoaderRoute: typeof PrecosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/projetos': {
       id: '/projetos'
       path: '/projetos'
@@ -203,6 +223,7 @@ const rootRouteChildren: RootRouteChildren = {
   AutomacoesRoute: AutomacoesRoute,
   BmtPromptStudioRoute: BmtPromptStudioRoute,
   ConfiguracoesRoute: ConfiguracoesRoute,
+  PrecosRoute: PrecosRoute,
   ProjetosRoute: ProjetosRoute,
 }
 export const routeTree = rootRouteImport
