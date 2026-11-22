@@ -11,6 +11,10 @@ export interface Project {
   createdAt: string;
   deadline: string;
   cover: string;
+  isDemo?: boolean;
+  priority?: string;
+  startDate?: string;
+  briefing?: Record<string, unknown>;
 }
 
 export interface Reference {

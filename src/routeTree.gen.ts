@@ -16,8 +16,10 @@ import { Route as AjudaRouteImport } from './routes/ajuda'
 import { Route as AutomacoesRouteImport } from './routes/automacoes'
 import { Route as BmtPromptStudioRouteImport } from './routes/bmt-prompt-studio'
 import { Route as ConfiguracoesRouteImport } from './routes/configuracoes'
+import { Route as PlanosRouteImport } from './routes/planos'
 import { Route as PrecosRouteImport } from './routes/precos'
 import { Route as ProjetosRouteImport } from './routes/projetos'
+import { Route as RedefinirSenhaRouteImport } from './routes/redefinir-senha'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -54,6 +56,11 @@ const ConfiguracoesRoute = ConfiguracoesRouteImport.update({
   path: '/configuracoes',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PlanosRoute = PlanosRouteImport.update({
+  id: '/planos',
+  path: '/planos',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PrecosRoute = PrecosRouteImport.update({
   id: '/precos',
   path: '/precos',
@@ -62,6 +69,11 @@ const PrecosRoute = PrecosRouteImport.update({
 const ProjetosRoute = ProjetosRouteImport.update({
   id: '/projetos',
   path: '/projetos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RedefinirSenhaRoute = RedefinirSenhaRouteImport.update({
+  id: '/redefinir-senha',
+  path: '/redefinir-senha',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -73,8 +85,10 @@ export interface FileRoutesByFullPath {
   '/automacoes': typeof AutomacoesRoute
   '/bmt-prompt-studio': typeof BmtPromptStudioRoute
   '/configuracoes': typeof ConfiguracoesRoute
+  '/planos': typeof PlanosRoute
   '/precos': typeof PrecosRoute
   '/projetos': typeof ProjetosRoute
+  '/redefinir-senha': typeof RedefinirSenhaRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -84,8 +98,10 @@ export interface FileRoutesByTo {
   '/automacoes': typeof AutomacoesRoute
   '/bmt-prompt-studio': typeof BmtPromptStudioRoute
   '/configuracoes': typeof ConfiguracoesRoute
+  '/planos': typeof PlanosRoute
   '/precos': typeof PrecosRoute
   '/projetos': typeof ProjetosRoute
+  '/redefinir-senha': typeof RedefinirSenhaRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -96,8 +112,10 @@ export interface FileRoutesById {
   '/automacoes': typeof AutomacoesRoute
   '/bmt-prompt-studio': typeof BmtPromptStudioRoute
   '/configuracoes': typeof ConfiguracoesRoute
+  '/planos': typeof PlanosRoute
   '/precos': typeof PrecosRoute
   '/projetos': typeof ProjetosRoute
+  '/redefinir-senha': typeof RedefinirSenhaRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -109,8 +127,10 @@ export interface FileRouteTypes {
     | '/automacoes'
     | '/bmt-prompt-studio'
     | '/configuracoes'
+    | '/planos'
     | '/precos'
     | '/projetos'
+    | '/redefinir-senha'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -120,8 +140,10 @@ export interface FileRouteTypes {
     | '/automacoes'
     | '/bmt-prompt-studio'
     | '/configuracoes'
+    | '/planos'
     | '/precos'
     | '/projetos'
+    | '/redefinir-senha'
   id:
     | '__root__'
     | '/'
@@ -131,8 +153,10 @@ export interface FileRouteTypes {
     | '/automacoes'
     | '/bmt-prompt-studio'
     | '/configuracoes'
+    | '/planos'
     | '/precos'
     | '/projetos'
+    | '/redefinir-senha'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -143,8 +167,10 @@ export interface RootRouteChildren {
   AutomacoesRoute: typeof AutomacoesRoute
   BmtPromptStudioRoute: typeof BmtPromptStudioRoute
   ConfiguracoesRoute: typeof ConfiguracoesRoute
+  PlanosRoute: typeof PlanosRoute
   PrecosRoute: typeof PrecosRoute
   ProjetosRoute: typeof ProjetosRoute
+  RedefinirSenhaRoute: typeof RedefinirSenhaRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -198,6 +224,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConfiguracoesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/planos': {
+      id: '/planos'
+      path: '/planos'
+      fullPath: '/planos'
+      preLoaderRoute: typeof PlanosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/precos': {
       id: '/precos'
       path: '/precos'
@@ -212,6 +245,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProjetosRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/redefinir-senha': {
+      id: '/redefinir-senha'
+      path: '/redefinir-senha'
+      fullPath: '/redefinir-senha'
+      preLoaderRoute: typeof RedefinirSenhaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -223,8 +263,10 @@ const rootRouteChildren: RootRouteChildren = {
   AutomacoesRoute: AutomacoesRoute,
   BmtPromptStudioRoute: BmtPromptStudioRoute,
   ConfiguracoesRoute: ConfiguracoesRoute,
+  PlanosRoute: PlanosRoute,
   PrecosRoute: PrecosRoute,
   ProjetosRoute: ProjetosRoute,
+  RedefinirSenhaRoute: RedefinirSenhaRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

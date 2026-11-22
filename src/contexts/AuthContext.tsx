@@ -21,6 +21,9 @@ type AuthContextValue = {
   loading: boolean;
   signIn: (email: string, password: string) => Promise<AuthResult>;
   signUp: (name: string, email: string, password: string) => Promise<AuthResult>;
+  resetPassword: (email: string) => Promise<AuthResult>;
+  updatePassword: (password: string) => Promise<AuthResult>;
+  isPasswordRecovery: boolean;
   signOut: () => Promise<void>;
 };
 
@@ -29,8 +32,8 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 async function prepareUserWorkspace(user: User): Promise<string> {
   const supabase = getSupabaseClient();
   const fullName =
-    typeof user.user_metadata?.full_name === "string"
-      ? user.user_metadata.full_name
+    typeof user.user_metadata?.["full_name"] === "string"
+      ? user.user_metadata["full_name"]
       : (user.email?.split("@")[0] ?? "Pessoa usuária");
 
   const { error: profileError } = await supabase.from("profiles").upsert({
@@ -61,16 +64,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [workspaceId, setWorkspaceId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isPasswordRecovery, setIsPasswordRecovery] = useState(false);
 
   useEffect(() => {
     let active = true;
-    const supabase = getSupabaseClient();
+    let supabase: ReturnType<typeof getSupabaseClient>;
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
+    try {
+      supabase = getSupabaseClient();
+    } catch (error: unknown) {
+      console.error("Supabase não configurado:", error);
+      setLoading(false);
+      return () => {
+        active = false;
+      };
+    }
+
+ const {
+  data: { subscription },
+} = supabase.auth.onAuthStateChange((event, session) => {
+ 
+  setIsPasswordRecovery(event === "PASSWORD_RECOVERY");
+
+  const nextUser = session?.user ?? null;
+
+  setUser((currentUser) => {
+    if (currentUser?.id === nextUser?.id) {
+      return currentUser;
+    }
+
+    return nextUser;
+  });
+});
 
     supabase.auth
       .getSession()
@@ -140,6 +165,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [],
   );
 
+  const resetPassword = useCallback(async (email: string): Promise<AuthResult> => {
+    const normalizedEmail = email.trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+      return { error: "Informe um endereço de e-mail válido." };
+    }
+
+    const configuredRedirect = import.meta.env["VITE_SUPABASE_PASSWORD_RESET_REDIRECT"];
+    const redirectTo = configuredRedirect?.trim() || `${window.location.origin}/redefinir-senha`;
+
+    const { error } = await getSupabaseClient().auth.resetPasswordForEmail(normalizedEmail, {
+      redirectTo,
+    });
+    return { error: error?.message ?? null };
+  }, []);
+
+  const updatePassword = useCallback(async (password: string): Promise<AuthResult> => {
+    if (password.length < 6) {
+      return { error: "A nova senha deve ter pelo menos 6 caracteres." };
+    }
+    const { error } = await getSupabaseClient().auth.updateUser({ password });
+    if (!error) setIsPasswordRecovery(false);
+    return { error: error?.message ?? null };
+  }, []);
+
   const signOut = useCallback(async () => {
     const { error } = await getSupabaseClient().auth.signOut({ scope: "local" });
     if (error) throw error;
@@ -148,8 +197,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo(
-    () => ({ user, workspaceId, loading, signIn, signUp, signOut }),
-    [user, workspaceId, loading, signIn, signUp, signOut],
+    () => ({
+      user,
+      workspaceId,
+      loading,
+      signIn,
+      signUp,
+      resetPassword,
+      updatePassword,
+      isPasswordRecovery,
+      signOut,
+    }),
+    [
+      user,
+      workspaceId,
+      loading,
+      signIn,
+      signUp,
+      resetPassword,
+      updatePassword,
+      isPasswordRecovery,
+      signOut,
+    ],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

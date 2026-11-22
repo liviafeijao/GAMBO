@@ -2,26 +2,55 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 let browserClient: SupabaseClient | undefined;
 
-// Create the authenticated client only in the browser. The app uses SSR,
-// so a module-level client could otherwise be shared between server requests.
-export function getSupabaseClient() {
+export function getSupabaseConfig() {
+  const url = (
+    import.meta.env["VITE_SUPABASE_URL"] ||
+    import.meta.env["SUPABASE_URL"] ||
+    (typeof process !== "undefined" ? process.env["SUPABASE_URL"] : undefined) ||
+    ""
+  ).trim();
+
+  const publishableKey = (
+    import.meta.env["VITE_SUPABASE_PUBLISHABLE_KEY"] ||
+    import.meta.env["SUPABASE_PUBLISHABLE_KEY"] ||
+    (typeof process !== "undefined" ? process.env["SUPABASE_PUBLISHABLE_KEY"] : undefined) ||
+    ""
+  ).trim();
+
+  return { url, publishableKey };
+}
+
+export function isSupabaseConfigured() {
+  const { url, publishableKey } = getSupabaseConfig();
+
+  return Boolean(
+    url &&
+    publishableKey &&
+    url !== "https://your-project.supabase.co" &&
+    publishableKey !== "your_supabase_publishable_key" &&
+    /^https?:\/\//.test(url),
+  );
+}
+
+export function getSupabaseClient(): SupabaseClient {
   if (typeof window === "undefined") {
     throw new Error("O cliente Supabase só pode ser usado no navegador.");
   }
 
   if (!browserClient) {
-    const supabaseUrl =
-      import.meta.env.VITE_SUPABASE_URL ?? "https://fgxdzvlonocddtimkoaw.supabase.co";
+    const { url, publishableKey } = getSupabaseConfig();
 
-    const supabasePublishableKey =
-      import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ??
-      "sb_publishable_xLbeOIkYcOtTSKG85OFsCg_PYk163OJ";
+    if (!isSupabaseConfigured()) {
+      throw new Error(
+        "Configure VITE_SUPABASE_URL e VITE_SUPABASE_PUBLISHABLE_KEY antes de usar o GAMBO.",
+      );
+    }
 
-    browserClient = createClient(supabaseUrl, supabasePublishableKey, {
+    browserClient = createClient(url, publishableKey, {
       auth: {
+        persistSession: true,
         autoRefreshToken: true,
         detectSessionInUrl: true,
-        persistSession: true,
       },
     });
   }

@@ -19,10 +19,13 @@ import {
   X,
   ArrowUpRight,
   LogOut,
+  Send,
+  CreditCard,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Logo } from "./Logo";
+import { TELEGRAM_BOT_URL } from "@/lib/external-links";
 import { useAuth } from "@/contexts/AuthContext";
 import { AuthScreen } from "@/components/auth/AuthScreen";
 
@@ -32,6 +35,7 @@ const navigation = [
   { to: "/ai-director", label: "AI Director", icon: Orbit },
   { to: "/bmt-prompt-studio", label: "BMT Prompt Studio", icon: SlidersHorizontal },
   { to: "/acervo-criativo", label: "Acervo Criativo", icon: Images },
+  { to: "/planos", label: "Planos", icon: CreditCard },
   { to: "/automacoes", label: "Automações", icon: Workflow },
 ] as const;
 
@@ -47,8 +51,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     navigation.find((item) => item.to === location.pathname)?.label ??
     (location.pathname === "/ajuda" ? "Ajuda" : "Configurações");
   const displayName =
-    typeof user?.user_metadata?.full_name === "string"
-      ? user.user_metadata.full_name
+    typeof user?.user_metadata?.["full_name"] === "string"
+      ? user.user_metadata["full_name"]
       : (user?.email ?? "Conta GAMBO");
   const initials = displayName.slice(0, 2).toUpperCase();
 
@@ -98,12 +102,23 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             to="/ajuda"
             onClick={() => setMobile(false)}
             className={`nav-link ${location.pathname === "/ajuda" ? "active" : ""}`}
-            title="Ajuda & suporte"
+            title="Ajuda"
           >
             <HelpCircle size={17} />
             <span className="nav-text">Ajuda & suporte</span>
             <ArrowUpRight size={13} />
           </Link>
+          <a
+            href={TELEGRAM_BOT_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="nav-link"
+            title="Abrir o bot no Telegram"
+          >
+            <Send size={17} />
+            <span className="nav-text">Telegram</span>
+            <ArrowUpRight size={13} />
+          </a>
           <Button
             variant="ghost"
             className="nav-link w-full"
