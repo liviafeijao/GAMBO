@@ -4,6 +4,6 @@ import { pageHead } from "@/lib/metadata";
 
 export const Route = createFileRoute("/planos")({
   head: () =>
-    pageHead("Planos", "Planos comerciais ilustrativos do GAMBO consultados no Supabase."),
+    pageHead("Planos", "Planos e valores demonstrativos do GAMBO; indisponíveis para compra."),
   component: Pricing,
 });

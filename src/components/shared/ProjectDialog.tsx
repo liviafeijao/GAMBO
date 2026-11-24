@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { statuses, validateProject, type Project } from "@/domain/models";
-import { covers } from "@/data/repositories";
+import { projectCategories, statuses, validateProject, type Project } from "@/domain/models";
+import { defaultCover } from "@/data/repositories";
+import { CoverPicker } from "@/components/shared/CoverPicker";
 import { AssetUploadField } from "@/components/shared/AssetUploadField";
 import { useAssetUrl } from "@/hooks/useAssetUrl";
 
@@ -25,7 +26,7 @@ export function ProjectForm({
       status: "Planejamento",
       createdAt: new Date().toISOString().slice(0, 10),
       deadline: "",
-      cover: covers[0],
+      cover: defaultCover,
     },
   );
   const [error, setError] = useState("");
@@ -81,7 +82,11 @@ export function ProjectForm({
                 value={value.category}
                 onChange={(event) => change("category", event.target.value)}
               >
-                {["Branding", "Direção de arte", "Campanha", "Digital", "Editorial"].map((item) => (
+                {!projectCategories.includes(
+                  value.category as (typeof projectCategories)[number],
+                ) &&
+                  value.category && <option value={value.category}>{value.category}</option>}
+                {projectCategories.map((item) => (
                   <option key={item}>{item}</option>
                 ))}
               </select>
@@ -113,19 +118,7 @@ export function ProjectForm({
                 rows={3}
               />
             </label>
-            <label className="wide">
-              Capa demonstrativa
-              <select value={value.cover} onChange={(event) => changeCover(event.target.value)}>
-                {!covers.includes(value.cover as (typeof covers)[number]) && (
-                  <option value={value.cover}>Imagem enviada</option>
-                )}
-                {covers.map((cover, index) => (
-                  <option value={cover} key={cover}>
-                    {["Formas & objetos", "Botânica", "Arquitetura"][index]}
-                  </option>
-                ))}
-              </select>
-            </label>
+            <CoverPicker cover={value.cover} onChange={changeCover} />
             <AssetUploadField folder="projects" onUploaded={(path) => change("cover", path)} />
           </div>
           {error && (

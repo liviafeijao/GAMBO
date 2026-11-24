@@ -64,6 +64,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [workspaceId, setWorkspaceId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [sessionReady, setSessionReady] = useState(false);
   const [isPasswordRecovery, setIsPasswordRecovery] = useState(false);
 
   useEffect(() => {
@@ -74,32 +75,47 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       supabase = getSupabaseClient();
     } catch (error: unknown) {
       console.error("Supabase não configurado:", error);
+      setSessionReady(true);
       setLoading(false);
       return () => {
         active = false;
       };
     }
 
+    let authEventObserved = false;
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
+      authEventObserved = true;
+      setSessionReady(true);
       setIsPasswordRecovery(event === "PASSWORD_RECOVERY");
-      setUser(session?.user ?? null);
+
+      const nextUser = session?.user ?? null;
+
+      setUser((currentUser) => {
+        if (currentUser?.id === nextUser?.id) {
+          return currentUser;
+        }
+
+        return nextUser;
+      });
     });
 
     supabase.auth
       .getSession()
       .then(({ data, error }) => {
         if (error) throw error;
-        if (active) {
+        if (active && !authEventObserved) {
           const sessionUser = data.session?.user ?? null;
-          setUser(sessionUser);
-          if (!sessionUser) setLoading(false);
+          if (sessionUser) {
+            setUser(sessionUser);
+            setSessionReady(true);
+          }
         }
       })
       .catch((error: unknown) => {
         console.error("Falha ao recuperar sessão do GAMBO:", error);
-        if (active) setLoading(false);
+        if (active) setSessionReady(true);
       });
 
     return () => {
@@ -110,6 +126,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let active = true;
+    if (!sessionReady) return;
     if (!user) {
       setWorkspaceId(null);
       setLoading(false);
@@ -132,7 +149,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => {
       active = false;
     };
-  }, [user]);
+  }, [sessionReady, user]);
 
   const signIn = useCallback(async (email: string, password: string): Promise<AuthResult> => {
     const { error } = await getSupabaseClient().auth.signInWithPassword({

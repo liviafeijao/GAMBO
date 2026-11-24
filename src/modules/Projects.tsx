@@ -6,12 +6,13 @@ import { ProjectCard } from "@/components/shared/ProjectCard";
 import { ProjectForm, ProjectDetail, ConfirmDelete } from "@/components/shared/ProjectDialog";
 import { useCollection } from "@/viewmodels/useCollection";
 import { projectsRepository } from "@/data/repositories";
-import { statuses, type Project } from "@/domain/models";
+import { projectCategories, statuses, type Project } from "@/domain/models";
 
 export function Projects({ initialQuery = "" }: { initialQuery?: string }) {
   const { items, loading, error, save, remove } = useCollection(projectsRepository);
   const [query, setQuery] = useState(initialQuery);
   const [status, setStatus] = useState("Todos os status");
+  const [category, setCategory] = useState("Todas as categorias");
   const [list, setList] = useState(false);
   const [form, setForm] = useState<Project | "new" | null>(null);
   const [detail, setDetail] = useState<Project | null>(null);
@@ -22,6 +23,7 @@ export function Projects({ initialQuery = "" }: { initialQuery?: string }) {
       `${project.name} ${project.client} ${project.category}`
         .toLowerCase()
         .includes(query.toLowerCase()) &&
+      (category === "Todas as categorias" || project.category === category) &&
       (status === "Todos os status" || project.status === status),
   );
 
@@ -66,6 +68,21 @@ export function Projects({ initialQuery = "" }: { initialQuery?: string }) {
           onChange={(event) => setStatus(event.target.value)}
         >
           {["Todos os status", ...statuses].map((item) => (
+            <option key={item}>{item}</option>
+          ))}
+        </select>
+        <select
+          aria-label="Filtrar categoria"
+          value={category}
+          onChange={(event) => setCategory(event.target.value)}
+        >
+          {[
+            "Todas as categorias",
+            ...new Set([
+              ...projectCategories,
+              ...items.map((item) => item.category).filter((item) => item.trim()),
+            ]),
+          ].map((item) => (
             <option key={item}>{item}</option>
           ))}
         </select>
@@ -119,6 +136,7 @@ export function Projects({ initialQuery = "" }: { initialQuery?: string }) {
             onClick={() => {
               setQuery("");
               setStatus("Todos os status");
+              setCategory("Todas as categorias");
             }}
           >
             Limpar filtros

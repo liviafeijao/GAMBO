@@ -8,7 +8,8 @@ import { AssetUploadField } from "@/components/shared/AssetUploadField";
 import { useAssetUrl } from "@/hooks/useAssetUrl";
 
 import { useCollection } from "@/viewmodels/useCollection";
-import { covers, referencesRepository } from "@/data/repositories";
+import { defaultCover, referencesRepository } from "@/data/repositories";
+import { CoverPicker } from "@/components/shared/CoverPicker";
 import { validateReference, type Reference } from "@/domain/models";
 
 function ReferenceForm({
@@ -28,14 +29,10 @@ function ReferenceForm({
       category: "Fotografia",
       collection: "",
       tags: [],
-      cover: covers[0],
+      cover: defaultCover,
     },
   );
   const [error, setError] = useState("");
-
-  function changeCover(nextCover: string) {
-    setValue((current) => ({ ...current, cover: nextCover }));
-  }
 
   return (
     <Dialog
@@ -96,19 +93,10 @@ function ReferenceForm({
                 onChange={(event) => setValue({ ...value, tags: event.target.value.split(",") })}
               />
             </label>
-            <label className="wide">
-              Imagem demonstrativa
-              <select value={value.cover} onChange={(event) => changeCover(event.target.value)}>
-                {!covers.includes(value.cover as (typeof covers)[number]) && (
-                  <option value={value.cover}>Imagem enviada</option>
-                )}
-                {covers.map((cover, index) => (
-                  <option value={cover} key={cover}>
-                    {["Formas & objetos", "Botânica", "Arquitetura"][index]}
-                  </option>
-                ))}
-              </select>
-            </label>
+            <CoverPicker
+              cover={value.cover}
+              onChange={(cover) => setValue((current) => ({ ...current, cover }))}
+            />
             <AssetUploadField
               folder="references"
               onUploaded={(path) => setValue((current) => ({ ...current, cover: path }))}

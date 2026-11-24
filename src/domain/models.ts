@@ -1,6 +1,16 @@
 export const statuses = ["Planejamento", "Em andamento", "Em revisão", "Concluído"] as const;
 export type ProjectStatus = (typeof statuses)[number];
 
+export const projectCategories = [
+  "Branding",
+  "Direção de Arte",
+  "Campanha",
+  "Digital",
+  "Editorial",
+  "Fotografia",
+  "Audiovisual",
+] as const;
+
 export interface Project {
   id: string;
   name: string;
@@ -36,6 +46,7 @@ export interface Repository<T extends { id: string }> {
 export function validateProject(project: Project): string | null {
   if (!project.name.trim()) return "Informe o nome do projeto.";
   if (!project.client.trim()) return "Informe o cliente.";
+  if (!project.category.trim()) return "Selecione uma categoria.";
   if (!project.description.trim()) return "Descreva o projeto.";
   if (!project.deadline) return "Selecione o prazo.";
   if (project.deadline < project.createdAt.slice(0, 10))

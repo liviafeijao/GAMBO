@@ -17,6 +17,7 @@
     "rolldown": "1.2.1"
   },
   "dependencies": {
+    "@ai-sdk/google": "^4.0.124",
     "@ai-sdk/openai": "^4.0.121",
     "@ai-sdk/openai-compatible": "^3.0.93",
     "@ai-sdk/react": "^4.0.177",
@@ -52,7 +53,7 @@
     "@streamdown/code": "^2.0.1",
     "@streamdown/math": "^1.0.4",
     "@streamdown/mermaid": "^1.0.4",
-    "@supabase/supabase-js": "^2.119.0",
+    "@supabase/supabase-js": "2.119.0",
     "@tailwindcss/vite": "^4.2.1",
     "@tanstack/react-query": "^5.101.1",
     "@tanstack/react-router": "1.170.41",

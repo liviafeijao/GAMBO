@@ -14,8 +14,11 @@ Configure no `.env`:
 
 - `VITE_SUPABASE_URL`
 - `VITE_SUPABASE_PUBLISHABLE_KEY`
+- `GEMINI_API_KEY` (server only; required for IA Director)
+- `GEMINI_MODEL` (optional; default `gemini-2.5-flash`, subject to availability for your Google AI account)
 
 Use somente a chave publicável do Supabase no frontend. Nunca adicione `service_role`, secret keys, senhas ou tokens administrativos ao repositório.
+`GEMINI_API_KEY` is consumed only by the authenticated server function. Never expose it through a `VITE_` variable. The IA Director's conversations and saved ideas are stored in the current browser; they are not persisted to Supabase.
 
 ## Arquitetura
 

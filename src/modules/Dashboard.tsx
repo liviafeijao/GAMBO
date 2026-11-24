@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import {
   Plus,
@@ -20,6 +20,7 @@ import { ProjectCard } from "@/components/shared/ProjectCard";
 import { ProjectForm, ProjectDetail } from "@/components/shared/ProjectDialog";
 import { useCollection } from "@/viewmodels/useCollection";
 import { projectsRepository } from "@/data/repositories";
+import { formatDashboardDate } from "@/lib/date-format";
 import type { Project } from "@/domain/models";
 const tools = [
   {
@@ -45,6 +46,26 @@ export function Dashboard() {
   const { items, loading, error, save } = useCollection(projectsRepository);
   const [create, setCreate] = useState(false);
   const [detail, setDetail] = useState<Project | null>(null);
+  const [today, setToday] = useState(() => formatDashboardDate(new Date()));
+
+  useEffect(() => {
+    let timeout: ReturnType<typeof setTimeout>;
+    const updateAtLocalMidnight = () => {
+      const now = new Date();
+      const nextMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+      timeout = setTimeout(
+        () => {
+          setToday(formatDashboardDate(new Date()));
+          updateAtLocalMidnight();
+        },
+        Math.max(1_000, nextMidnight.getTime() - now.getTime()),
+      );
+    };
+
+    updateAtLocalMidnight();
+    return () => clearTimeout(timeout);
+  }, []);
+
   return (
     <>
       <div className="welcome">
@@ -52,7 +73,7 @@ export function Dashboard() {
           <h2>Seu próximo movimento criativo.</h2>
           <p className="muted text-xs m-0">Bom te ver por aqui, Lívia.</p>
         </div>
-        <span className="mono hidden sm:block">SEGUNDA-FEIRA, 16 NOV 2026</span>
+        <span className="mono hidden sm:block">{today}</span>
       </div>
       <section className="hero">
         <img
