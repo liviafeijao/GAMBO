@@ -14,6 +14,8 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AppShell } from "@/components/shared/AppShell";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { ThemeProvider } from "@/contexts/ThemeContext";
+import { useTheme } from "@/contexts/theme-context";
 import { Toaster } from "sonner";
 
 function NotFoundComponent() {
@@ -132,13 +134,24 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <ThemeProvider>
+        <RootContent />
+      </ThemeProvider>
+    </QueryClientProvider>
+  );
+}
+
+function RootContent() {
+  const { theme } = useTheme();
+  return (
+    <>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <AuthProvider>
         <AppShell>
           <Outlet />
         </AppShell>
       </AuthProvider>
-      <Toaster theme="dark" position="bottom-right" />
-    </QueryClientProvider>
+      <Toaster theme={theme === "clean" ? "light" : "dark"} position="bottom-right" />
+    </>
   );
 }

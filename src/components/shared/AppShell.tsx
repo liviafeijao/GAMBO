@@ -58,7 +58,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#101210] text-sm text-white/60">
+      <div className="flex min-h-screen items-center justify-center bg-background text-sm text-muted-foreground">
         Preparando seu espaço GAMBO...
       </div>
     );

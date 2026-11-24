@@ -5,7 +5,7 @@ export const Route = createFileRoute("/ai-director")({
   head: () =>
     pageHead(
       "AI Director",
-      "Explore conceitos, briefings e novas direções criativas no ambiente demonstrativo do GAMBO.",
+      "Converse com o IA Director para desenvolver conceitos, briefings e direções criativas no GAMBO.",
     ),
   component: Director,
 });

@@ -1,5 +1,11 @@
 import { describe, it, expect } from "vitest";
-import { statuses, validateProject, validateReference, type Project } from "@/domain/models";
+import {
+  projectCategories,
+  statuses,
+  validateProject,
+  validateReference,
+  type Project,
+} from "@/domain/models";
 const p: Project = {
   id: "test",
   name: "Projeto",
@@ -12,6 +18,22 @@ const p: Project = {
   cover: "",
 };
 describe("Project rules", () => {
+  it("provides all supported project categories", () => {
+    expect(projectCategories).toEqual([
+      "Branding",
+      "Direção de Arte",
+      "Campanha",
+      "Digital",
+      "Editorial",
+      "Fotografia",
+      "Audiovisual",
+    ]);
+  });
+  it("requires a project category", () => {
+    expect(validateProject({ ...p, category: "" })).toBe("Selecione uma categoria.");
+    expect(validateProject({ ...p, category: "Fotografia" })).toBeNull();
+    expect(validateProject({ ...p, category: "Audiovisual" })).toBeNull();
+  });
   it("accepts exactly the four requested project statuses", () => {
     expect(statuses).toEqual(["Planejamento", "Em andamento", "Em revisão", "Concluído"]);
   });

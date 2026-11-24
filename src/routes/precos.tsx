@@ -6,7 +6,7 @@ export const Route = createFileRoute("/precos")({
   head: () =>
     pageHead(
       "Preços",
-      "Compare os planos configuráveis do GAMBO para profissionais, equipes e agências.",
+      "Compare os planos fictícios do GAMBO, sem disponibilidade comercial ou cobrança.",
     ),
   component: Pricing,
 });
